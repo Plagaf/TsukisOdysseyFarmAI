@@ -20,18 +20,21 @@ class Planta {
         this.color = color;
         this.forma = forma;
         this.codigo = codigo;
+        this.tipoObjeto = PLANTA;
     }
 }
 
 class Modificador {
-    constructor(nombre, costo, efectoTiempo, efectoCosecha, areaEfecto, tipo, codigo) {
+    constructor(nombre, costo, efectoTiempo, efectoCosecha, forma, tipoModificador, codigo) {
         this.nombre = nombre;
         this.costo = costo;
         this.efectoTiempo = efectoTiempo;
         this.efectoCosecha = efectoCosecha;
-        this.areaEfecto = areaEfecto;
-        this.tipo = tipo;
+        this.forma = forma;
+        this.tipoModificador = tipoModificador;
         this.codigo = codigo;
+        this.tipoObjeto = MODIFICADOR;
+        this.color = "#F00";
     }
 }
 
@@ -46,10 +49,7 @@ const unidad = [
     ["P", "P"]
 ];
 
-
-const barra = [
-    [false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false],
+const barraS = [
     [false, false, "M", "M", "M", "M", false, false],
     [false, false, "M", "M", "M", "M", false, false],
     ["E", "E", "E", "E", "E", "E", "E", "E"],
@@ -57,6 +57,38 @@ const barra = [
     ["E", "E", "E", "E", "E", "E", "E", "E"],
     ["E", "E", "E", "E", "E", "E", "E", "E"],
 ];
+
+const barraN = [
+    ["E", "E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E", "E"],
+    [false, false, "M", "M", "M", "M", false, false],
+    [false, false, "M", "M", "M", "M", false, false]
+];
+
+const barraW = [
+    ["E", "E", "E", "E", "E", "E", false, false],
+    ["E", "E", "E", "E", "E", "E", false, false],
+    ["E", "E", "E", "E", "E", "E", "M", "M"],
+    ["E", "E", "E", "E", "E", "E", "M", "M"],
+    ["E", "E", "E", "E", "E", "E", "M", "M"],
+    ["E", "E", "E", "E", "E", "E", "M", "M"],
+    ["E", "E", "E", "E", "E", "E", false, false],
+    ["E", "E", "E", "E", "E", "E", false, false],
+];
+
+const barraE = [
+    [false, false, "E", "E", "E", "E", "E", "E"],
+    [false, false, "E", "E", "E", "E", "E", "E"],
+    ["M", "M", "E", "E", "E", "E", "E", "E"],
+    ["M", "M", "E", "E", "E", "E", "E", "E"],
+    ["M", "M", "E", "E", "E", "E", "E", "E"],
+    ["M", "M", "E", "E", "E", "E", "E", "E"],
+    [false, false, "E", "E", "E", "E", "E", "E"],
+    [false, false, "E", "E", "E", "E", "E", "E"]
+];
+
 
 
 const dona = [
@@ -68,12 +100,23 @@ const dona = [
     ["E", "E", "E", "E", "E", "E"],
 ];
 
-const poste = [
-    [false, false, false, false, false, false, "M", "M", "E", "E", "E", "E", "E", "E"],
-    [false, false, false, false, false, false, "M", "M", "E", "E", "E", "E", "E", "E"]
+const posteH = [
+    ["M", "M", "E", "E", "E", "E", "E", "E"],
+    ["M", "M", "E", "E", "E", "E", "E", "E"]
 ];
 
-const lados = [
+const posteV = [
+    ["M", "M"],
+    ["M", "M"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"]
+];
+
+const ladosH = [
     [false, false, "E", "E", "E", "E", "E", "E", false, false],
     [false, false, "E", "E", "E", "E", "E", "E", false, false],
     ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
@@ -86,12 +129,29 @@ const lados = [
     [false, false, "E", "E", "E", "E", "E", "E", false, false],
 ];
 
+const ladosV = [
+    [false, false, "E", "E", false, false, "E", "E", false, false],
+    [false, false, "E", "E", false, false, "E", "E", false, false],
+    ["E", "E", "E", "E", "M", "M", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "M", "M", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "M", "M", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "M", "M", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "M", "M", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "M", "M", "E", "E", "E", "E"],
+    [false, false, "E", "E", false, false, "E", "E", false, false],
+    [false, false, "E", "E", false, false, "E", "E", false, false]
+];
 
 const tiposDeModificadores = [
-    //(nombre,costo, efectoTiempo, efectoCosecha, areaEfecto, tipo, codigo) 
-    new Modificador("GigaGrow", 5000, -0.20, .25, barra, "UV-Lights", "GG"),
-    new Modificador("Megagrow", 3000, -0.20, .25, poste, "UV-Lights", "MG"),
-    new Modificador("Lane Sprinkler", 8000, -0.2, 0, lados, "Sprinklers", "LS"),
+    //(nombre,costo, efectoTiempo, efectoCosecha, forma, tipo, codigo) 
+    new Modificador("GigaGrowS", 5000, -0.20, .25, barraS, "UV-Lights", "GGS"),
+    new Modificador("GigaGrowN", 5000, -0.20, .25, barraN, "UV-Lights", "GGN"),
+    new Modificador("GigaGrowW", 5000, -0.20, .25, barraW, "UV-Lights", "GGW"),
+    new Modificador("GigaGrowE", 5000, -0.20, .25, barraE, "UV-Lights", "GGE"),
+    new Modificador("Megagrow", 3000, -0.20, .25, posteH, "UV-Lights", "MG"),
+    new Modificador("MegagrowV", 3000, -0.20, .25, posteV, "UV-Lights", "MGV"),
+    new Modificador("Lane SprinklerH", 8000, -0.2, 0, ladosH, "Sprinklers", "LSH"),
+    new Modificador("Lane SprinklerV", 8000, -0.2, 0, ladosV, "Sprinklers", "LSV"),
     new Modificador("Rotary Sprinkler", 5000, -0.2, 0, dona, "Sprinklers", "RS"),
     new Modificador("Goat Fertilizer", 250, -1 / 3, .50, dona, "Fertilizer", "GF"),
 ];
@@ -109,7 +169,7 @@ const tiposDePlantas = [
 ];
 
 // Función para obtener posiciones relativas del objeto o area de efecto
-function getPosicionesRelativas(posicion, forma, columnas, filas, tipo) {
+function getPosicionesRelativas(posicion, forma, columnas, filas, esAE) {
     let posicionesRelativas = [];
     let filaValida = Math.floor(posicion / columnas);
     let columnaValida = posicion % columnas;
@@ -131,18 +191,17 @@ function getPosicionesRelativas(posicion, forma, columnas, filas, tipo) {
             break;
         }
     }
-
     // Calcula las posiciones relativas
     for (let i = 0; i < forma.length; i++) {
         for (let j = 0; j < forma[i].length; j++) {
-            if (tipo === 'solido' && (forma[i][j] === PLANTA || forma[i][j] === MODIFICADOR)) {
+            if (esAE === false && (forma[i][j] === PLANTA || forma[i][j] === MODIFICADOR)) {
                 let filaAbs = filaValida + (i - filaSolido);
                 let columnaAbs = columnaValida + (j - columnaSolido);
 
                 if (filaAbs >= 0 && filaAbs < filas && columnaAbs >= 0 && columnaAbs < columnas) {
                     posicionesRelativas.push([filaAbs, columnaAbs]);
                 }
-            } else if (tipo === 'ae' && forma[i][j] === AREA_EFECTO) {
+            } else if (esAE === true && forma[i][j] === AREA_EFECTO) {
                 let filaAbs = filaValida + (i - filaSolido);
                 let columnaAbs = columnaValida + (j - columnaSolido);
 
@@ -184,37 +243,16 @@ function generarModificadorAleatorio() {
 
 }
 
-function esPosicionAceptable(capa, fila, columna, forma) {
-    for (let i = 0; i < forma.length; i++) {
-        for (let j = 0; j < forma[i].length; j++) {
-            if (forma[i][j] === MODIFICADOR || forma[i][j] === PLANTA) {
-                const filaCapa = fila + i;
-                const columnaCapa = columna + j;
-                // Verificar si la celda está dentro del mapa y si está vacía
-                if (
-                    filaCapa < 0 || filaCapa >= capa.length ||
-                    columnaCapa < 0 || columnaCapa >= capa[filaCapa].length ||
-                    capa[filaCapa][columnaCapa] !== null
-                ) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-
 // Función para crear un mapa aleatorio
 function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
     // Validaciones para evitar bucles infinitos
-    if ((numPlantas + numModificadores) > filas * columnas) {
-        throw new Error("El número de plantas o modificadores es mayor que el espacio disponible en el mapa.");
+    if ((numPlantas + numModificadores) > filas/2 * columnas/2) {
+        //console.warn("El número de plantas o modificadores es mayor que el espacio disponible en el mapa.");
     }
 
     // Inicializar las capas
     const capaPlantas = Array(filas).fill(null).map(() => Array(columnas).fill(null));
-    const capaPlantasColor = Array(filas).fill(null).map(() => Array(columnas).fill(null));
+    const capaColores = Array(filas).fill(null).map(() => Array(columnas).fill(null));
     const capaModificadores = Array(filas).fill(null).map(() => Array(columnas).fill(null));
     const capaObjetos = Array(filas).fill(null).map(() => Array(columnas).fill(null));
     const capaAreaEfecto = Array(filas).fill(false).map(() => Array(columnas).fill(false));
@@ -225,6 +263,83 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
     const capaAspersor = Array(filas).fill(0).map(() => Array(columnas).fill(0));
     let capaCodificacion = Array(filas / 2).fill(0).map(() => Array(columnas / 2).fill(0));
 
+    function esPosicionAceptable(capaObjetos,fila, columna, objeto, columnas, filas) {
+
+        const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, objeto.forma, columnas, filas, false);
+
+        const hayCeldaOcupada = posicionesRelativasObjetos.some(([filaRelativa, columnaRelativa]) => {
+            const filaActual = filaRelativa;
+            const columnaActual = columnaRelativa;
+
+            if (capaObjetos[filaActual][columnaActual] !== undefined && capaObjetos[filaActual][columnaActual] !== null) {
+                //console.log("celda ocupada: ", filaActual, columnaActual, objeto);
+                return true; // Detenemos la iteración de some()
+            } else {
+                return false; // Seguimos iterando
+            }
+        });
+
+        if (hayCeldaOcupada) {
+            return false;
+        } else {
+            return true;
+        }
+
+
+    }
+
+    function llenarCapaObjetos(fila, columna, objeto, columnas, filas) {
+
+        const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, objeto.forma, columnas, filas, false);
+
+        const hayCeldaOcupada = posicionesRelativasObjetos.some(([filaRelativa, columnaRelativa]) => {
+            const filaActual = filaRelativa;
+            const columnaActual = columnaRelativa;
+
+            if (capaObjetos[filaActual][columnaActual] !== undefined && capaObjetos[filaActual][columnaActual] !== null) {
+                // Acción opcional si se desea ejecutar algo al detectar la celda ocupada (opcional)
+                return true; // Detenemos la iteración de some()
+            } else {
+                capaObjetos[filaActual][columnaActual] = objeto.tipoObjeto;
+                capaColores[filaActual][columnaActual] = objeto.color;
+                return false; // Seguimos iterando
+            }
+        });
+
+        if (hayCeldaOcupada) {
+            return true;
+        } else {
+            return false;
+        }
+
+
+    }
+
+    function llenarCapasAE(fila, columna, modificador, columnas, filas) {
+        const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, modificador.forma, columnas, filas, true);
+        posicionesRelativasObjetos.forEach(([filaRelativa, columnaRelativa]) => {
+            const filaActual = filaRelativa;
+            const columnaActual = columnaRelativa;
+            capaAreaEfecto[filaActual][columnaActual] = true;
+            switch (modificador.tipoModificador) {
+                case "UV-Lights":
+                    capaUvTiempo[filaActual][columnaActual] = modificador.efectoTiempo;
+                    capaUvCosecha[filaActual][columnaActual] = modificador.efectoCosecha;
+                    break;
+                case "Fertilizer":
+                    capaFertilizanteTiempo[filaActual][columnaActual] = modificador.efectoTiempo;
+                    capaFertilizanteCosecha[filaActual][columnaActual] = modificador.efectoCosecha;
+                    break;
+                case "Sprinklers":
+                    capaAspersor[filaActual][columnaActual] = modificador.efectoTiempo;
+                    break;
+                default:
+                    console.warn("Tipo de modificador desconocido.");
+                    break;
+            }
+        });
+    }
+
     // Colocar modificadores (con un límite de intentos para evitar bucle infinito)
     let modificadoresColocados = 0;
 
@@ -234,41 +349,14 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
         const fila = posicion[0];
         const columna = posicion[1];
         const modificador = generarModificadorAleatorio();
-        const tipoModificador = modificador.tipo;
 
-        //console.log("buscar lugar a: ", modificador.nombre);
-        if (esPosicionAceptable(capaObjetos, fila, columna, modificador.areaEfecto)) {
+        esPosAceptable = esPosicionAceptable(capaObjetos, fila, columna, modificador, columnas,filas);
+
+        if (esPosAceptable) {
             capaModificadores[fila][columna] = modificador
-            const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, modificador.areaEfecto, columnas, filas, "solido");
-            const posicionesRelativasAE = getPosicionesRelativas(fila * columnas + columna, modificador.areaEfecto, columnas, filas, "ae");
+            llenarCapaObjetos(fila, columna, modificador, columnas, filas, "solido")
+            llenarCapasAE(fila, columna, modificador, columnas, filas, "solido")
 
-            posicionesRelativasObjetos.forEach(([filaRelativa, columnaRelativa]) => {
-                const filaActual = filaRelativa;
-                const columnaActual = columnaRelativa;
-                capaObjetos[filaActual][columnaActual] = MODIFICADOR;
-            });
-
-            posicionesRelativasAE.forEach(([filaRelativa, columnaRelativa]) => {
-                const filaActual = filaRelativa;
-                const columnaActual = columnaRelativa;
-                capaAreaEfecto[filaActual][columnaActual] = true;
-                switch (tipoModificador) {
-                    case "UV-Lights":
-                        capaUvTiempo[filaActual][columnaActual] = modificador.efectoTiempo;
-                        capaUvCosecha[filaActual][columnaActual] = modificador.efectoCosecha;
-                        break;
-                    case "Fertilizer":
-                        capaFertilizanteTiempo[filaActual][columnaActual] = modificador.efectoTiempo;
-                        capaFertilizanteCosecha[filaActual][columnaActual] = modificador.efectoCosecha;
-                        break;
-                    case "Sprinklers":
-                        capaAspersor[filaActual][columnaActual] = modificador.efectoTiempo;
-                        break;
-                    default:
-                        console.warn("Tipo de modificador desconocido.");
-                        break;
-                }
-            });
             modificadoresColocados++;
         }
         intentosModificadores--;
@@ -283,15 +371,12 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
         const columna = posicion[1];
         const planta = generarPlantaAleatoria();
 
-        if (esPosicionAceptable(capaObjetos, fila, columna, planta.forma)) {
+        esPosAceptable = esPosicionAceptable(capaObjetos, fila, columna, planta,columnas, filas);
+        //console.log("planta: ", esPosAceptable);
+        
+        if (esPosAceptable) {
             capaPlantas[fila][columna] = planta
-            const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, planta.forma, columnas, filas, "solido");
-            posicionesRelativasObjetos.forEach(([filaRelativa, columnaRelativa]) => {
-                const filaActual = filaRelativa;
-                const columnaActual = columnaRelativa;
-                    capaObjetos[filaActual][columnaActual] = PLANTA;
-                    capaPlantasColor[filaActual][columnaActual] = planta.color;
-            });
+            llenarCapaObjetos(fila, columna, planta, columnas, filas, "solido")
             plantasColocadas++;
         }
         intentosPlantas--;
@@ -310,7 +395,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
 
     return {
         capaPlantas,
-        capaPlantasColor,
+        capaColores,
         capaModificadores,
         capaAreaEfecto,
         capaObjetos,
@@ -335,8 +420,71 @@ function crearCodigoMapa(capaOrigen, capaCodificacion) {
 }
 
 
+
+function obtenerObjetoPorCodigo(codigo) {
+    // Busca en los tipos de modificadores
+    const modificador = tiposDeModificadores.find(mod => mod.codigo === codigo);
+    if (modificador) {
+        return modificador;
+    }
+
+    // Busca en los tipos de plantas
+    const planta = tiposDePlantas.find(pl => pl.codigo === codigo);
+    if (planta) {
+        return planta;
+    }
+
+    // Si no se encuentra el objeto, devuelve null
+    return null;
+}
+
+
+function decodificarMapa(codigoMapa, filas, columnas) {
+    const matrizCultivos = [];
+
+    // Inicializa la matriz con filas y columnas vacías
+    for (let i = 0; i < filas; i++) {
+        matrizCultivos[i] = [];
+        for (let j = 0; j < columnas; j++) {
+            matrizCultivos[i][j] = 0;
+        }
+    }
+
+    let fila = 0;
+    let columna = 0;
+    let i = 0;
+
+    while (i < codigoMapa.length) {
+        const elemento = codigoMapa[i];
+
+        // Si es un string, añade el cultivo a la matriz
+        matrizCultivos[fila][columna] = elemento;
+
+        columna++;
+        if (columna >= columnas) {
+            columna = 0;
+            fila++;
+        }
+        i += 1;
+    }
+    return matrizCultivos;
+}
+
+
+
+
+
+
+function getListado(capa) {
+    // Usando el método flat() con una profundidad de 1
+    const listadoObjetos = capa.flat(1).filter(elemento => elemento !== null);
+    return listadoObjetos;
+}
+
+
+
 // Función para calcular la cosecha
-function calcularCosecha(capaPlantas, capaAreaEfecto, capaFertilizanteCosecha, capaUvCosecha, capaUvTiempo, capaFertilizanteTiempo, capaAspersor) {
+function calcularCosecha(capaPlantas, capaAreaEfecto, capaFertilizanteCosecha, capaUvCosecha, capaUvTiempo, capaFertilizanteTiempo, capaAspersor, capaCodificacion) {
     const capaCosecha = [];
     const capaTiempo = [];
     const listaCosecha = [];
@@ -474,18 +622,37 @@ function generarMapaYCalcular(filas = 10, columnas = 10, plantas = 1, modificado
 let resultados = [];
 let UPHprevio = 0;
 
-for (let index = 0; index < 1*10e6; index++) {
+filas = 10;
+columnas = 10;
 
-    const resultado = generarMapaYCalcular(10, 10, generarEnteroAleatorio(1, 25), generarEnteroAleatorio(0, 20))
+
+for (let index = 0; index < 1e6; index++) {
+    let randPlantas = generarEnteroAleatorio(1, filas/2 * columnas/2)
+    let randMods = generarEnteroAleatorio(0, (filas/2 * columnas/2)*.8)
+
+    while (randPlantas+randMods > filas/2 * columnas/2) {
+        randPlantas = generarEnteroAleatorio(1, filas/2 * columnas/2)
+        randMods = generarEnteroAleatorio(0, (filas/2 * columnas/2)*.8)
+
+        
+    }
+
+    let resultado = generarMapaYCalcular(filas, columnas, randPlantas, randMods)
+
+    //resultado = resultado.UPHprevio = UPHprevio;
+
+    //console.log(index,": ", UPHprevio, resultado.UPH);
 
     if(resultado.UPH > UPHprevio){
         resultados.push(resultado);
-        UPHprevio = resultado.UPH
+        UPHprevio = resultado.UPH;
+    }else{
+        
+        //resultados.push(resultado);
     }
 
-
     if (index % 10000 === 0) {
-    console.log(`Iteración: ${index}`);
+    console.log(`Iteración: ${index}`, "Uph Max: ", UPHprevio );
   }
 
 }

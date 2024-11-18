@@ -43,6 +43,14 @@
         border-radius: 4px;
       }
 
+      .input-section input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
       .input-section button {
         padding: 10px 20px;
         background-color: #4caf50;
@@ -155,12 +163,14 @@
         margin-top: 10px;
         font-weight: bold;
       }
+
     </style>
   </head>
   <body>
-    <h1>Simulador1</h1>
+    
 
     <div class="container">
+      <h1>Simulador1</h1>
       <div class="first-row">
         <div class="input-section">
           <h2>Configuración del Mapa</h2>
@@ -203,9 +213,6 @@
         <h2>Listado de Cosecha</h2>
         <table id="listado-plantas"></table>
       </div>
-    </div>
-
-    <div id="decodificador">
       <h2>Decodificador</h2>
       <div class="first-row">
       <div class="input-section">
@@ -220,7 +227,7 @@
           type="text"
           id="codigoMapa"
           placeholder="Ingresa el código del mapa"
-          value="S,0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+          value="S,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
         />
         <br />
         <button id="calcularUPH">Calcular UPH</button>
