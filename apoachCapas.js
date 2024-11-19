@@ -7,9 +7,9 @@ const AREA_EFECTO = "E";
 const tamanoCelda = 10;
 
 
-
 const svg1 = d3.select("#mapa-svg");
 const svg2 = d3.select("#mapa-svg-codificado");
+let myChart;
 
 class Planta {
     constructor(nombre, tipo, utUnitaria, utPromedio, uPH, tiempoCosecha, cantidadCosecha, color, forma, codigo) {
@@ -101,12 +101,17 @@ const dona = [
     ["E", "E", "E", "E", "E", "E"],
 ];
 
-const posteH = [
+const posteE = [
     ["M", "M", "E", "E", "E", "E", "E", "E"],
     ["M", "M", "E", "E", "E", "E", "E", "E"]
 ];
 
-const posteV = [
+const posteW = [
+    ["E", "E", "E", "E", "E", "E", "M", "M"],
+    ["E", "E", "E", "E", "E", "E", "M", "M"]
+];
+
+const posteS = [
     ["M", "M"],
     ["M", "M"],
     ["E", "E"],
@@ -115,6 +120,17 @@ const posteV = [
     ["E", "E"],
     ["E", "E"],
     ["E", "E"]
+];
+
+const posteN = [
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["E", "E"],
+    ["M", "M"],
+    ["M", "M"]
 ];
 
 const ladosH = [
@@ -149,8 +165,10 @@ const tiposDeModificadores = [
     new Modificador("GigaGrowN", 5000, -0.20, .25, barraN, "UV-Lights", "GGN"),
     new Modificador("GigaGrowW", 5000, -0.20, .25, barraW, "UV-Lights", "GGW"),
     new Modificador("GigaGrowE", 5000, -0.20, .25, barraE, "UV-Lights", "GGE"),
-    new Modificador("Megagrow", 3000, -0.20, .25, posteH, "UV-Lights", "MG"),
-    new Modificador("MegagrowV", 3000, -0.20, .25, posteV, "UV-Lights", "MGV"),
+    new Modificador("MegagrowS", 3000, -0.20, .25, posteS, "UV-Lights", "MGS"),
+    new Modificador("MegagrowN", 3000, -0.20, .25, posteN, "UV-Lights", "MGN"),
+    new Modificador("MegagrowW", 3000, -0.20, .25, posteW, "UV-Lights", "MGW"),
+    new Modificador("MegagrowE", 3000, -0.20, .25, posteE, "UV-Lights", "MGE"),
     new Modificador("Lane SprinklerH", 8000, -0.2, 0, ladosH, "Sprinklers", "LSH"),
     new Modificador("Lane SprinklerV", 8000, -0.2, 0, ladosV, "Sprinklers", "LSV"),
     new Modificador("Rotary Sprinkler", 5000, -0.2, 0, dona, "Sprinklers", "RS"),
@@ -159,14 +177,14 @@ const tiposDeModificadores = [
 
 
 const tiposDePlantas = [
-    //          nombre, tipo,       utUnitaria, utPromedio, uPH, tiempoCosecha, cantidadCosecha, color
-    //  new Planta("Sandía", "Consumible", 140, 140, 140 / 6, 6, 1, "#03a572", unidad, "S"),
+    //        nombre, tipo,       utUnitaria, utPromedio, uPH, tiempoCosecha, cantidadCosecha, color
+    new Planta("Sandía", "Consumible", 140, 140, 140 / 6, 6, 1, "#03a572", unidad, "S"),
     new Planta("Calabaza", "Consumible", 50, 50, 50 / 2, 2, 1, "#FF7518", unidad, "C"),
-    //   new Planta("Zanahoria", "No consumible", 1, 20, 20 / 2, 2, 20, "#FFC000", unidad, "Z"),
-    //   new Planta("Papa", "No consumible", 1, 11, 11 / 1, 1, 11, "#4C3228", unidad, "P"),
-    //   new Planta("Fresa", "No consumible", 2, 10, 10 / 2, 2, 5, "#e42e67", unidad, "F"),
-    //   new Planta("Uva", "No consumible", 4, 24, 24 / 2, 2, 6, "#4c00b0", unidad, "U"),
-    //  new Planta("Nabo", "No consumible", 1, 22, 22 / 2, 2, 22, "#c3c8ac", unidad, "N"),
+    new Planta("Zanahoria", "No consumible", 1, 20, 20 / 2, 2, 20, "#FFC000", unidad, "Z"),
+    new Planta("Papa", "No consumible", 1, 11, 11 / 1, 1, 11, "#4C3228", unidad, "P"),
+    new Planta("Fresa", "No consumible", 2, 10, 10 / 2, 2, 5, "#e42e67", unidad, "F"),
+    new Planta("Uva", "No consumible", 4, 24, 24 / 2, 2, 6, "#4c00b0", unidad, "U"),
+    new Planta("Nabo", "No consumible", 1, 22, 22 / 2, 2, 22, "#c3c8ac", unidad, "N"),
 ];
 
 // Función para obtener posiciones relativas del objeto o area de efecto
@@ -201,6 +219,10 @@ function getPosicionesRelativas(posicion, forma, columnas, filas, esAE) {
 
                 if (filaAbs >= 0 && filaAbs < filas && columnaAbs >= 0 && columnaAbs < columnas) {
                     posicionesRelativas.push([filaAbs, columnaAbs]);
+                } else {
+                    //console.error("Error: Posición fuera del mapa:", filaAbs, columnaAbs);
+                    dentroDeMapa = false;
+                    return [];
                 }
             } else if (esAE === true && forma[i][j] === AREA_EFECTO) {
                 let filaAbs = filaValida + (i - filaSolido);
@@ -208,6 +230,8 @@ function getPosicionesRelativas(posicion, forma, columnas, filas, esAE) {
 
                 if (filaAbs >= 0 && filaAbs < filas && columnaAbs >= 0 && columnaAbs < columnas) {
                     posicionesRelativas.push([filaAbs, columnaAbs]);
+                } else {
+                    //console.error("Error: Posición fuera del mapa:", filaAbs, columnaAbs);
                 }
             }
         }
@@ -263,31 +287,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
     const capaFertilizanteCosecha = Array(filas).fill(0).map(() => Array(columnas).fill(0));
     const capaAspersor = Array(filas).fill(0).map(() => Array(columnas).fill(0));
     let capaCodificacion = Array(filas / 2).fill(0).map(() => Array(columnas / 2).fill(0));
-
-    function esPosicionAceptable(capaObjetos, fila, columna, objeto, columnas, filas) {
-
-        const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, objeto.forma, columnas, filas, false);
-
-        const hayCeldaOcupada = posicionesRelativasObjetos.some(([filaRelativa, columnaRelativa]) => {
-            const filaActual = filaRelativa;
-            const columnaActual = columnaRelativa;
-
-            if (capaObjetos[filaActual][columnaActual] !== undefined && capaObjetos[filaActual][columnaActual] !== null) {
-                //console.log("celda ocupada: ", filaActual, columnaActual, objeto);
-                return true; // Detenemos la iteración de some()
-            } else {
-                return false; // Seguimos iterando
-            }
-        });
-
-        if (hayCeldaOcupada) {
-            return false;
-        } else {
-            return true;
-        }
-
-
-    }
+    let hayCeldaOcupada = false;
 
     function llenarCapaObjetos(fila, columna, objeto, columnas, filas) {
 
@@ -303,17 +303,20 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
             } else {
                 capaObjetos[filaActual][columnaActual] = objeto.tipoObjeto;
                 capaColores[filaActual][columnaActual] = objeto.color;
+                if (objeto.tipoObjeto == MODIFICADOR) {
+                    capaModificadores[fila][columna] = objeto;
+                    llenarCapasAE(fila, columna, objeto, columnas, filas, "solido");
+                } else if (objeto.tipoObjeto == PLANTA) {
+                    capaPlantas[fila][columna] = objeto;
+                }
                 return false; // Seguimos iterando
             }
         });
-
         if (hayCeldaOcupada) {
             return true;
         } else {
             return false;
         }
-
-
     }
 
     function llenarCapasAE(fila, columna, modificador, columnas, filas) {
@@ -351,13 +354,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
         const columna = posicion[1];
         const modificador = generarModificadorAleatorio();
 
-        esPosAceptable = esPosicionAceptable(capaObjetos, fila, columna, modificador, columnas, filas);
-
-        if (esPosAceptable) {
-            capaModificadores[fila][columna] = modificador
-            llenarCapaObjetos(fila, columna, modificador, columnas, filas, "solido")
-            llenarCapasAE(fila, columna, modificador, columnas, filas, "solido")
-
+        if (!llenarCapaObjetos(fila, columna, modificador, columnas, filas, "solido")) {
             modificadoresColocados++;
         }
         intentosModificadores--;
@@ -372,12 +369,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores) {
         const columna = posicion[1];
         const planta = generarPlantaAleatoria();
 
-        esPosAceptable = esPosicionAceptable(capaObjetos, fila, columna, planta, columnas, filas);
-        //console.log("planta: ", esPosAceptable);
-
-        if (esPosAceptable) {
-            capaPlantas[fila][columna] = planta
-            llenarCapaObjetos(fila, columna, planta, columnas, filas, "solido")
+        if (!llenarCapaObjetos(fila, columna, planta, columnas, filas, "solido")) {
             plantasColocadas++;
         }
         intentosPlantas--;
@@ -419,7 +411,6 @@ function crearCodigoMapa(capaOrigen, capaCodificacion) {
     }
     return capaCodificacion;
 }
-
 
 
 function obtenerObjetoPorCodigo(codigo) {
@@ -472,16 +463,11 @@ function decodificarMapa(codigoMapa, filas, columnas) {
 }
 
 
-
-
-
-
 function getListado(capa) {
     // Usando el método flat() con una profundidad de 1
     const listadoObjetos = capa.flat(1).filter(elemento => elemento !== null);
     return listadoObjetos;
 }
-
 
 
 // Función para calcular la cosecha
@@ -568,17 +554,11 @@ function calcularCosecha(capaPlantas, capaAreaEfecto, capaFertilizanteCosecha, c
     totalUtilidad = Math.round(totalUtilidad * 100) / 100;
 
     //console.log(listaCosecha);
-    document.getElementById('totalCosechado').textContent = cosechaTotal;
-    document.getElementById('cosechaUph').textContent = cosechaUph;
-    document.getElementById('utilidadTotal').textContent = totalUtilidad;
-    document.getElementById('coidgoMapaAleatorio').textContent = capaCodificacion;
+
 
 
     return { cosechaTotal, cosechaUph, listaCosecha };
 }
-
-
-
 
 
 function dibujarAreaEfectoSVG(svg, capaAreaEfecto, tamanoCelda) {
@@ -691,35 +671,6 @@ function dibujarMapaSVG(svg, capaColores, capaModificadores, capaAreaEfecto, cap
 }
 
 
-
-//#############################
-
-
-
-
-// Crear un mapa aleatorio de 10x10 con 10 plantas y 5 modificadores
-const filas = 8;
-const columnas = 8;
-const plantas = 1;
-const modificadores = 1;
-
-const mapaAleatorio = crearMapaAleatorio(filas, columnas, plantas, modificadores);
-const capaPlantas = mapaAleatorio.capaPlantas;
-const capaColores = mapaAleatorio.capaColores;
-const capaModificadores = mapaAleatorio.capaModificadores;
-const capaAreaEfecto = mapaAleatorio.capaAreaEfecto;
-const capaObjetos = mapaAleatorio.capaObjetos;
-const capaFertilizanteCosecha = mapaAleatorio.capaFertilizanteCosecha;
-const capaUvCosecha = mapaAleatorio.capaUvCosecha;
-const capaUvTiempo = mapaAleatorio.capaUvTiempo;
-const capaFertilizanteTiempo = mapaAleatorio.capaFertilizanteTiempo;
-const capaAspersor = mapaAleatorio.capaAspersor;
-
-//function calcularCosecha(capaPlantas, capaAreaEfecto, capaModCosecha, capaModTiempo, capaFertilizanteCosecha, capaUvCosecha, capaUvTiempo,capaFertilizanteTiempo,capaAspersor )
-const cosechaTotal = calcularCosecha(capaPlantas, capaAreaEfecto, capaFertilizanteCosecha, capaUvCosecha, capaUvTiempo, capaFertilizanteTiempo, capaAspersor);
-
-
-
 function actualizarTablaPlantas(cosechaTotal) {
     const listadoPlantas = document.getElementById("listado-plantas");
     listadoPlantas.innerHTML = ""; // Limpiar la tabla
@@ -791,13 +742,6 @@ function actualizarTablaPlantas(cosechaTotal) {
 
 }
 
-
-actualizarTablaPlantas(cosechaTotal);
-
-
-const listaModificadores = getListado(mapaAleatorio.capaModificadores);
-
-// Función para actualizar la tabla de modificadores
 function actualizarTablaModificadores(listaModificadores) {
     const listaPlantas = document.getElementById("listado-modificadores");
     listaPlantas.innerHTML = ""; // Limpiar la tabla
@@ -834,16 +778,10 @@ function actualizarTablaModificadores(listaModificadores) {
     sumaFilaMods.insertCell();
 }
 
-actualizarTablaModificadores(listaModificadores);
-
-
-dibujarMapaSVG(svg1, capaColores, capaModificadores, capaAreaEfecto, capaObjetos, filas, columnas);
-
-
 
 
 // Función que se ejecuta al hacer click en el botón
-function generarMapaYCalcular(filas = 10, columnas = 10, plantas = 1, modificadores = 1) {
+function generarMapaAleatorioCalcularYDibujar(filas = 10, columnas = 10, plantas = 1, modificadores = 1, svg) {
 
     // Generar el mapa aleatorio
     const mapaAleatorio = crearMapaAleatorio(filas, columnas, plantas, modificadores);
@@ -860,46 +798,10 @@ function generarMapaYCalcular(filas = 10, columnas = 10, plantas = 1, modificado
         mapaAleatorio.capaCodificacion
     );
 
+    dibujarMapaSVG(svg, mapaAleatorio.capaColores, mapaAleatorio.capaModificadores, mapaAleatorio.capaAreaEfecto, mapaAleatorio.capaObjetos, filas, columnas);
 
-    console.log("Mapa aleatorio: ", mapaAleatorio);
-    console.log("Aleatorio Cosecha total:", cosechaTotal);
-
-    // Actualizar las tablas
-    actualizarTablaPlantas(cosechaTotal);
-    actualizarTablaModificadores(getListado(mapaAleatorio.capaModificadores));
-
-
-    dibujarMapaSVG(svg1, mapaAleatorio.capaColores, mapaAleatorio.capaModificadores, mapaAleatorio.capaAreaEfecto, mapaAleatorio.capaObjetos, filas, columnas);
-
-    return mapaAleatorio;
+    return { mapaAleatorio: mapaAleatorio, cosecha: cosechaTotal };
 }
-
-
-function generarMapaYCalcularGA(filas = 10, columnas = 10, plantas = 1, modificadores = 1) {
-
-    // Generar el mapa aleatorio
-    const mapaReconstruido = crearMapaAleatorio(filas, columnas, plantas, modificadores);
-
-    // Calcular la cosechacapaPlantas, capaAreaEfecto, capaModCosecha, capaModTiempo, capaFertilizanteCosecha, capaUvCosecha, capaUvTiempo,capaFertilizanteTiempo,capaAspersor)
-    const cosechaTotal = calcularCosecha(
-        mapaReconstruido.capaPlantas,
-        mapaReconstruido.capaAreaEfecto,
-        mapaReconstruido.capaFertilizanteCosecha,
-        mapaReconstruido.capaUvCosecha,
-        mapaReconstruido.capaUvTiempo,
-        mapaReconstruido.capaFertilizanteTiempo,
-        mapaReconstruido.capaAspersor,
-        mapaReconstruido.capaCodificacion
-    );
-
-
-    //console.log(mapaAleatorio);
-    //console.log("UPH", cosechaTotal.cosechaUph, "Mapa", mapaAleatorio.capaCodificacion.flat());
-
-    //guardarDatos('codigo.txt', { "UPH": cosechaTotal.cosechaUph, "Mapa": mapaAleatorio.capaCodificacion.flat() });
-    return { UPH: cosechaTotal.cosechaUph, Mapa: mapaReconstruido.capaCodificacion.flat() }
-}
-
 
 
 // Función para crear un mapa aleatorio
@@ -922,7 +824,6 @@ function crearMapaCodificado(filas, columnas, codigoMapa) {
     function llenarCapaObjetos(fila, columna, objeto, columnas, filas) {
 
         const posicionesRelativasObjetos = getPosicionesRelativas(fila * columnas + columna, objeto.forma, columnas, filas, false);
-
         const hayCeldaOcupada = posicionesRelativasObjetos.some(([filaRelativa, columnaRelativa]) => {
             const filaActual = filaRelativa;
             const columnaActual = columnaRelativa;
@@ -933,6 +834,14 @@ function crearMapaCodificado(filas, columnas, codigoMapa) {
             } else {
                 capaObjetos[filaActual][columnaActual] = objeto.tipoObjeto;
                 capaColores[filaActual][columnaActual] = objeto.color;
+
+                if (objeto.tipoObjeto == MODIFICADOR) {
+                    capaModificadores[fila][columna] = objeto;
+                    llenarCapasAE(fila, columna, objeto, columnas, filas, "solido");
+                } else if (objeto.tipoObjeto == PLANTA) {
+                    capaPlantas[fila][columna] = objeto;
+                }
+
                 return false; // Seguimos iterando
             }
         });
@@ -988,8 +897,6 @@ function crearMapaCodificado(filas, columnas, codigoMapa) {
                 continue;
             }
 
-            const claseObjeto = objeto.constructor.name;
-
             if (llenarCapaObjetos(fila, columna, objeto, columnas, filas, "solido")) {
                 //console.warn("Codificación incorrecta, no se pueden sobreponer modificadores.", fila, columna, objeto)
                 capaCodificacion = matriz;
@@ -1007,40 +914,13 @@ function crearMapaCodificado(filas, columnas, codigoMapa) {
                     capaCodificacion
                 }
 
-            } else {
-
-                if (claseObjeto == "Modificador") {
-
-                    capaModificadores[fila][columna] = objeto;
-                    llenarCapasAE(fila, columna, objeto, columnas, filas, "solido");
-                } else if (claseObjeto == "Planta") {
-                    llenarCapaObjetos(fila, columna, objeto, columnas, filas, "solido");
-                    capaPlantas[fila][columna] = objeto;
-                }
             }
-
         }
 
     }
 
     capaCodificacion = crearCodigoMapa(capaPlantas, capaCodificacion);
     capaCodificacion = crearCodigoMapa(capaModificadores, capaCodificacion);
-
-
-    /* console.log("Mapa codificado: ", {
-        capaPlantas,
-        capaColores,
-        capaModificadores,
-        capaAreaEfecto,
-        capaObjetos,
-        capaUvTiempo,
-        capaUvCosecha,
-        capaFertilizanteTiempo,
-        capaFertilizanteCosecha,
-        capaAspersor,
-        capaCodificacion
-    }); */
-
 
     return {
         capaPlantas,
@@ -1059,35 +939,12 @@ function crearMapaCodificado(filas, columnas, codigoMapa) {
 }
 
 
-
-
-const mapaCodificado = crearMapaCodificado(10, 10, mapaAleatorio.capaCodificacion.flat());
-const cosechaTotalCodificado = calcularCosecha(
-    mapaCodificado.capaPlantas,
-    mapaCodificado.capaAreaEfecto,
-    mapaCodificado.capaFertilizanteCosecha,
-    mapaCodificado.capaUvCosecha,
-    mapaCodificado.capaUvTiempo,
-    mapaCodificado.capaFertilizanteTiempo,
-    mapaCodificado.capaAspersor,
-    mapaCodificado.capaCodificacion
-);
-
-
-const resultadoDiv = document.getElementById("resultadoUPH");
-resultadoDiv.innerHTML = "UPH: " + JSON.stringify(cosechaTotalCodificado.cosechaUph);
-dibujarMapaSVG(svg2, mapaCodificado.capaColores, mapaCodificado.capaModificadores, mapaCodificado.capaAreaEfecto, mapaCodificado.capaObjetos, filas, columnas);
-
-
-
 function createTableUPHMapa(data, div) {
     document.getElementById(div).innerHTML = '';
 
     const table = document.createElement('table');
     table.className = "table-ga";
     const headerRow = table.insertRow();
-
-
 
     // Crear encabezado de la tabla
     headerRow.insertCell().textContent = "UPH";
@@ -1107,7 +964,6 @@ function createTableUPHMapa(data, div) {
     document.getElementById(div).appendChild(table);
 
 }
-
 
 
 function createTableMejoresResultados(data, div) {
@@ -1186,51 +1042,101 @@ function createTableG(data, div) {
     document.getElementById(div).appendChild(table);
 }
 
+
+function prepararTextoCodigoMapa(textBox) {
+    return textBox.replace(/\s/g, '').split(',')
+        .map(elemento =>
+            typeof elemento === 'string' ? elemento.replace(/"/g, '').toUpperCase() : elemento
+        );
+}
+
+
+window.onload = (event) => {
+    botonGenerarMapaAletorio.click();
+    botonCalcularCodificado.click();
+};
+
+
 // Agregar el evento click al botón
-const botonGenerar = document.getElementById("boton-generar");
+const botonGenerarMapaAletorio = document.getElementById("boton-generar");
 
-botonGenerar.addEventListener("click", function () {
+botonGenerarMapaAletorio.addEventListener("click", function () {
 
-    let filas =parseInt(document.getElementById("filas").value);
+    let filas = parseInt(document.getElementById("filas").value);
     let columnas = parseInt(document.getElementById("columnas").value);
 
-    const nuevoMapa = generarMapaYCalcular(
+    const nuevoMapa = generarMapaAleatorioCalcularYDibujar(
         filas,
         columnas,
         parseInt(document.getElementById("plantas").value),
-        parseInt(document.getElementById("modificadores").value)
+        parseInt(document.getElementById("modificadores").value),
+        svg1
     );
 
-    const mapaCodificado = crearMapaCodificado(filas, columnas, nuevoMapa.capaCodificacion.flat());
+    actualizarTablaPlantas(nuevoMapa.cosecha);
+    const listaModificadores = getListado(nuevoMapa.mapaAleatorio.capaModificadores);
+    actualizarTablaModificadores(listaModificadores);
 
-    const cosechaTotalCodificado = calcularCosecha(
-        mapaCodificado.capaPlantas,
-        mapaCodificado.capaAreaEfecto,
-        mapaCodificado.capaFertilizanteCosecha,
-        mapaCodificado.capaUvCosecha,
-        mapaCodificado.capaUvTiempo,
-        mapaCodificado.capaFertilizanteTiempo,
-        mapaCodificado.capaAspersor,
-        mapaCodificado.capaCodificacion
-    );
+    document.getElementById('totalCosechado').textContent = nuevoMapa.cosecha.cosechaTotal;
+    document.getElementById('cosechaUph').textContent = nuevoMapa.cosecha.cosechaUph;
+    document.getElementById('utilidadTotal').textContent = nuevoMapa.cosecha.totalUtilidad;
+    document.getElementById('coidgoMapaAleatorio').textContent = nuevoMapa.mapaAleatorio.capaCodificacion;
 
-    console.log("cosecha codificado btn: ", cosechaTotalCodificado);
+});
 
-    console.log("mapaCodificado codificado btn: ", mapaCodificado);
 
+const botonCalcularCodificado = document.getElementById("calcularUPH");
+
+botonCalcularCodificado.addEventListener("click", function () {
+
+    let codigoMapa = document.getElementById("codigoMapa").value
+    const filas = parseInt(document.getElementById("anchoMapa").value)
+    const columnas = parseInt(document.getElementById("largoMapa").value)
+
+    codigoMapa = prepararTextoCodigoMapa(codigoMapa)
+
+    if (codigoMapa.length !== filas / 2 * columnas / 2) {
+        //console.log("La longitud de la codificación no coincide con las filas y columnas del mapa");
+        alert("La longitud de la codificación no coincide con las filas y columnas del mapa");
+    } else {
+        const mapaCodificado = crearMapaCodificado(filas, columnas, codigoMapa);
+
+        const cosechaTotalCodificado = calcularCosecha(
+            mapaCodificado.capaPlantas,
+            mapaCodificado.capaAreaEfecto,
+            mapaCodificado.capaFertilizanteCosecha,
+            mapaCodificado.capaUvCosecha,
+            mapaCodificado.capaUvTiempo,
+            mapaCodificado.capaFertilizanteTiempo,
+            mapaCodificado.capaAspersor,
+            mapaCodificado.capaCodificacion
+        );
+
+        //console.log("cosecha codificado btn: ", cosechaTotalCodificado);
+        //console.log("crearMapaCodificado  btn: ", mapaCodificado);
+
+
+        const resultadoDiv = document.getElementById("resultadoUPH");
+        resultadoDiv.innerHTML = "UPH: " + JSON.stringify(cosechaTotalCodificado.cosechaUph);
+
+
+        dibujarMapaSVG(svg2, mapaCodificado.capaColores, mapaCodificado.capaModificadores, mapaCodificado.capaAreaEfecto, mapaCodificado.capaObjetos, filas, columnas);
+
+    }
 
 
 });
 
-let myChart;
 
-function updateFitPlot(data){
+
+
+
+
+function updateFitPlot(data) {
 
     if (myChart) {
         myChart.destroy();
     }
-
-
 
     const uphValues = data.slice().reverse().map(item => item.UPH);
 
@@ -1266,67 +1172,6 @@ function updateFitPlot(data){
         }
     });
 }
-
-
-const botonCalcularCodificado = document.getElementById("calcularUPH");
-
-
-botonCalcularCodificado.addEventListener("click", function () {
-
-    let codigoMapa = document.getElementById("codigoMapa").value
-    const filas = parseInt(document.getElementById("anchoMapa").value)
-    const columnas = parseInt(document.getElementById("largoMapa").value)
-
-    codigoMapa = prepararTextoCodigoMapa(codigoMapa)
-
-    if (codigoMapa.length !== filas / 2 * columnas / 2) {
-
-        console.log("La longitud de la codificación no coincide con las filas y columnas del mapa");
-        alert("La longitud de la codificación no coincide con las filas y columnas del mapa");
-
-    } else {
-        const mapaCodificado = crearMapaCodificado(filas, columnas, codigoMapa);
-
-        const cosechaTotalCodificado = calcularCosecha(
-            mapaCodificado.capaPlantas,
-            mapaCodificado.capaAreaEfecto,
-            mapaCodificado.capaFertilizanteCosecha,
-            mapaCodificado.capaUvCosecha,
-            mapaCodificado.capaUvTiempo,
-            mapaCodificado.capaFertilizanteTiempo,
-            mapaCodificado.capaAspersor,
-            mapaCodificado.capaCodificacion
-        );
-
-        console.log("cosecha codificado btn: ", cosechaTotalCodificado);
-        console.log("crearMapaCodificado  btn: ", mapaCodificado);
-
-
-        const resultadoDiv = document.getElementById("resultadoUPH");
-        resultadoDiv.innerHTML = "UPH: " + JSON.stringify(cosechaTotalCodificado.cosechaUph);
-
-
-        dibujarMapaSVG(svg2, mapaCodificado.capaColores, mapaCodificado.capaModificadores, mapaCodificado.capaAreaEfecto, mapaCodificado.capaObjetos, filas, columnas);
-
-    }
-
-
-});
-
-
-function prepararTextoCodigoMapa(textBox) {
-    return textBox.replace(/\s/g, '').split(',')
-        .map(elemento =>
-            typeof elemento === 'string' ? elemento.replace(/"/g, '').toUpperCase() : elemento
-        );
-}
-
-
-
-
-console.log("Mapa aleatorio: ", mapaAleatorio);
-console.log("Aleatorio Cosecha total:", cosechaTotal);
-
 
 
 function generarEnteroAleatorio(min, max) {
@@ -1422,87 +1267,65 @@ function reproducir(filas, columnas, poblacion, mutaciones) {
 }
 
 
-nPoblacion = 5000
-elementosAMutar = 15
-tamSeleccion = 1
-mejoresPuntuaciones = []
-nf = 8;
-nc = 8;
+if (1 === 1) {
 
-poblacion = crearPoblacion(nf, nc, nPoblacion);
+    nPoblacion = 100
+    elementosAMutar = 15
+    tamSeleccion = 1
+    mejoresPuntuaciones = []
+    nf = 8;
+    nc = 8;
 
-evaluado = evaluar(poblacion);
-console.log("evluado:", evaluado[0].UPH, "Mapa", evaluado[0].Mapa);
+    let reproduccion = crearPoblacion(nf, nc, nPoblacion);
 
-createTableUPHMapa(evaluado, "evaluacion");
+    let evaluado = evaluar(reproduccion);
+    //console.log("evaluado:", evaluado[0].UPH, "Mapa", evaluado[0].Mapa);
 
+    const botonGA = document.getElementById("generacionbtn");
+    botonGA.addEventListener("click", function () {
 
-seleccion = naturalSelection(evaluado, tamSeleccion);
-console.log("seleccionado: ", seleccion);
-document.getElementById("seleccion").innerHTML = JSON.stringify(seleccion);
+        evaluado = evaluar(reproduccion);
+        createTableUPHMapa(evaluado, "evaluacion");
 
+        seleccion = naturalSelection(evaluado, tamSeleccion);
+        document.getElementById("seleccion").innerHTML = JSON.stringify(seleccion);
 
-mutaciones = mutacion(seleccion.Mapa, elementosAMutar);
+        mejoresPuntuaciones.unshift({ UPH: seleccion.UPH[0], Mapa: seleccion.Mapa[0] });
 
-createTableG(mutaciones, "mutaciones")
+        document.getElementById("mejoresPuntuaciones").innerHTML = JSON.stringify(mejoresPuntuaciones);
+        createTableMejoresResultados(mejoresPuntuaciones, "mejoresPuntuaciones");
+        updateFitPlot(mejoresPuntuaciones);
 
-reproduccion = reproducir(nf, nc, nPoblacion, mutaciones);
+        mutaciones = mutacion(seleccion.Mapa, elementosAMutar);
+        createTableG(mutaciones, "mutaciones")
 
-createTableMutaciones(reproduccion.map(reproduccion => reproduccion.capaCodificacion.flat()), "reproduccion");
+        reproduccion = reproducir(nf, nc, nPoblacion, mutaciones);
 
+        createTableMutaciones(reproduccion.map(reproduccion => reproduccion.capaCodificacion.flat()), "reproduccion");
 
-const botonGA = document.getElementById("generacionbtn");
+        codigoMapa = seleccion.Mapa[0];
+        const mapaCodificado = crearMapaCodificado(8, 8, seleccion.Mapa[0]);
 
+        const cosechaTotalCodificado = calcularCosecha(
+            mapaCodificado.capaPlantas,
+            mapaCodificado.capaAreaEfecto,
+            mapaCodificado.capaFertilizanteCosecha,
+            mapaCodificado.capaUvCosecha,
+            mapaCodificado.capaUvTiempo,
+            mapaCodificado.capaFertilizanteTiempo,
+            mapaCodificado.capaAspersor,
+            mapaCodificado.capaCodificacion
+        );
 
-botonGA.addEventListener("click", function () {
+        const resultadoDiv = document.getElementById("resultadoUPH");
+        resultadoDiv.innerHTML = "UPH: " + JSON.stringify(cosechaTotalCodificado.cosechaUph);
 
-    evaluado = evaluar(reproduccion);
-
-    createTableUPHMapa(evaluado, "evaluacion");
-
-    seleccion = naturalSelection(evaluado, tamSeleccion);
-    document.getElementById("seleccion").innerHTML = JSON.stringify(seleccion);
-
-    mejoresPuntuaciones.unshift({ UPH: seleccion.UPH[0], Mapa: seleccion.Mapa[0] });
-
-    document.getElementById("mejoresPuntuaciones").innerHTML = JSON.stringify(mejoresPuntuaciones);
-    createTableMejoresResultados(mejoresPuntuaciones, "mejoresPuntuaciones");
-    updateFitPlot(mejoresPuntuaciones);
-
-    mutaciones = mutacion(seleccion.Mapa, elementosAMutar);
-    createTableG(mutaciones, "mutaciones")
-
-    reproduccion = reproducir(nf, nc, nPoblacion, mutaciones);
-    //document.getElementById("reproduccion").innerHTML = JSON.stringify(
-    //    reproduccion.map(reproduccion => reproduccion.capaCodificacion.flat()));
-
-    createTableMutaciones(reproduccion.map(reproduccion => reproduccion.capaCodificacion.flat()), "reproduccion");
-
-    console.log("preprado:", seleccion.Mapa[0]);
-
-    codigoMapa = seleccion.Mapa[0];
-    const mapaCodificado = crearMapaCodificado(8, 8, seleccion.Mapa[0]);
-
-    const cosechaTotalCodificado = calcularCosecha(
-        mapaCodificado.capaPlantas,
-        mapaCodificado.capaAreaEfecto,
-        mapaCodificado.capaFertilizanteCosecha,
-        mapaCodificado.capaUvCosecha,
-        mapaCodificado.capaUvTiempo,
-        mapaCodificado.capaFertilizanteTiempo,
-        mapaCodificado.capaAspersor,
-        mapaCodificado.capaCodificacion
-    );
-
-    //console.log("cosecha codificado btn: ", cosechaTotalCodificado);
+        dibujarMapaSVG(svg2, mapaCodificado.capaColores, mapaCodificado.capaModificadores, mapaCodificado.capaAreaEfecto, mapaCodificado.capaObjetos, nf, nc);
 
 
-    const resultadoDiv = document.getElementById("resultadoUPH");
-    resultadoDiv.innerHTML = "UPH: " + JSON.stringify(cosechaTotalCodificado.cosechaUph);
+    });
 
-    
-
-    dibujarMapaSVG(svg2, mapaCodificado.capaColores, mapaCodificado.capaModificadores, mapaCodificado.capaAreaEfecto, mapaCodificado.capaObjetos, filas, columnas);
+}
 
 
-});
+
