@@ -178,13 +178,14 @@ const tiposDeModificadores = [
 
 const tiposDePlantas = [
     //        nombre, tipo,       utUnitaria, utPromedio, uPH, tiempoCosecha, cantidadCosecha, color
-    new Planta("Sandía", "Consumible", 140, 140, 140 / 6, 6, 1, "#03a572", unidad, "S"),
-    new Planta("Calabaza", "Consumible", 50, 50, 50 / 2, 2, 1, "#FF7518", unidad, "C"),
-    new Planta("Zanahoria", "No consumible", 1, 20, 20 / 2, 2, 20, "#FFC000", unidad, "Z"),
+
+    //new Planta("Sandía", "Consumible", 140, 140, 140 / 6, 6, 1, "#03a572", unidad, "S"),
+    //new Planta("Calabaza", "Consumible", 50, 50, 50 / 2, 2, 1, "#FF7518", unidad, "C"),
+    //new Planta("Zanahoria", "No consumible", 1, 20, 20 / 2, 2, 20, "#FFC000", unidad, "Z"),
     new Planta("Papa", "No consumible", 1, 11, 11 / 1, 1, 11, "#4C3228", unidad, "P"),
-    new Planta("Fresa", "No consumible", 2, 10, 10 / 2, 2, 5, "#e42e67", unidad, "F"),
+    //new Planta("Fresa", "No consumible", 2, 10, 10 / 2, 2, 5, "#e42e67", unidad, "F"),
     new Planta("Uva", "No consumible", 4, 24, 24 / 2, 2, 6, "#4c00b0", unidad, "U"),
-    new Planta("Nabo", "No consumible", 1, 22, 22 / 2, 2, 22, "#c3c8ac", unidad, "N"),
+   new Planta("Nabo", "No consumible", 1, 22, 22 / 2, 2, 22, "#c3c8ac", unidad, "N"),
 ];
 
 // Función para obtener posiciones relativas del objeto o area de efecto
@@ -1140,7 +1141,6 @@ function updateFitPlot(data) {
 
     const uphValues = data.slice().reverse().map(item => item.UPH);
 
-
     // Chart.js configuration
     const ctx = document.getElementById('myChart').getContext('2d');
     myChart = new Chart(ctx, { // Assign the new chart instance to myChart
@@ -1173,7 +1173,6 @@ function updateFitPlot(data) {
     });
 }
 
-
 function generarEnteroAleatorio(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -1181,38 +1180,26 @@ function generarEnteroAleatorio(min, max) {
 // Crear población y fitness
 
 function crearPoblacion(filas, columnas, poblacion) {
-
     let resultados = [];
-
     for (let index = 0; index < poblacion; index++) {
         let randPlantas = generarEnteroAleatorio(1, filas / 2 * columnas / 2)
         let randMods = generarEnteroAleatorio(0, (filas / 2 * columnas / 2) * .8)
-
         while (randPlantas + randMods > filas / 2 * columnas / 2) {
             randPlantas = generarEnteroAleatorio(1, filas / 2 * columnas / 2)
             randMods = generarEnteroAleatorio(0, (filas / 2 * columnas / 2) * .8)
         }
-
         let resultado = crearMapaAleatorio(filas, columnas, randPlantas, randMods);
-
         resultados.push(resultado);
-
         if (index % 10000 === 0) {
             //console.log(`Iteración: ${index}`, );
         }
-
     }
-
     return resultados;
-
 }
 
 function evaluar(poblacion) {
-
     let evaluado = [];
-
     for (let index = 0; index < poblacion.length; index++) {
-
         const cosechaTotalCodificado = calcularCosecha(
             poblacion[index].capaPlantas,
             poblacion[index].capaAreaEfecto,
@@ -1225,13 +1212,56 @@ function evaluar(poblacion) {
         );
         evaluado.push({ UPH: cosechaTotalCodificado.cosechaUph, Mapa: poblacion[index].capaCodificacion.flat() });
     }
-
     return (evaluado);
 }
 
 function naturalSelection(jsonData, n) {
     const data = jsonData.sort((a, b) => b.UPH - a.UPH);
     return { UPH: data.slice(0, n).map(resultado => resultado.UPH), Mapa: data.slice(0, n).map(resultado => resultado.Mapa) };
+}
+
+function crossover(parent1, parent2) {
+    // Verifica que los padres tengan la misma longitud
+    if (parent1.length !== parent2.length) {
+        throw new Error("Los padres deben tener la misma longitud.");
+    }
+
+    // Selecciona un punto de cruce aleatorio
+    const crossoverPoint = Math.floor(Math.random() * parent1.length);
+
+    // Crea los hijos combinando segmentos de los padres
+    const child1 = parent1.slice(0, crossoverPoint).concat(parent2.slice(crossoverPoint));
+    const child2 = parent2.slice(0, crossoverPoint).concat(parent1.slice(crossoverPoint));
+
+    return [child1, child2];
+}
+
+function performCrossover(population, crossoverRate = 0.8) { //Añadido tasa de cruce
+    const newPopulation = [];
+    const populationSize = population.length;
+
+    //Para asegurar que haya un número par de padres para cruzar.
+    if (populationSize % 2 != 0) {
+        population.pop()
+    }
+
+
+
+    for (let i = 0; i < populationSize; i += 2) {
+        
+    //console.log(population[i], population[i+1]);
+        //probabilidad de crossover
+        if (Math.random() < crossoverRate) {
+            const children = crossover(population[i], population[i + 1]);
+            newPopulation.push(children[0]);
+            newPopulation.push(children[1]);
+        } else {
+            //Si no se cruzan, se mantienen los padres (elitismo parcial)
+            newPopulation.push(population[i]);
+            newPopulation.push(population[i + 1]);
+        }
+    }
+    return newPopulation;
 }
 
 
@@ -1266,17 +1296,38 @@ function reproducir(filas, columnas, poblacion, mutaciones) {
     return resultado;
 }
 
+function offspring(filas,columnas,crossovers){
+
+    let resultados = [];
+    for (let index = 0; index < crossovers.length; index++) {
+
+        let resultado = crearMapaCodificado(filas, columnas, crossovers[index]);
+
+        //console.log("mapa areado",resultado  );
+//        resultado = resultado.map(resultado => resultado.capaCodificacion.flat());
+
+        resultados.push(resultado);
+        if (index % 10000 === 0) {
+            //console.log(`Iteración: ${index}`, );
+        }
+    }
+    return resultados;
+}
 
 if (1 === 1) {
 
-    nPoblacion = 100
-    elementosAMutar = 15
-    tamSeleccion = 1
-    mejoresPuntuaciones = []
-    nf = 8;
-    nc = 8;
+    const nPoblacion = 5000;
+    const elementosAMutar = 15;
+    const tamSeleccion = 500;
+    const mejoresPuntuaciones = [];
+    const nf = 16;
+    const nc = 16;
+    let seleccion = [];
 
     let reproduccion = crearPoblacion(nf, nc, nPoblacion);
+
+    //console.log("poblacion inicial: ", reproduccion);
+    
 
     let evaluado = evaluar(reproduccion);
     //console.log("evaluado:", evaluado[0].UPH, "Mapa", evaluado[0].Mapa);
@@ -1289,22 +1340,30 @@ if (1 === 1) {
 
         seleccion = naturalSelection(evaluado, tamSeleccion);
         document.getElementById("seleccion").innerHTML = JSON.stringify(seleccion);
-
         mejoresPuntuaciones.unshift({ UPH: seleccion.UPH[0], Mapa: seleccion.Mapa[0] });
+
+        //console.log("seleccion:", seleccion);
 
         document.getElementById("mejoresPuntuaciones").innerHTML = JSON.stringify(mejoresPuntuaciones);
         createTableMejoresResultados(mejoresPuntuaciones, "mejoresPuntuaciones");
         updateFitPlot(mejoresPuntuaciones);
 
-        mutaciones = mutacion(seleccion.Mapa, elementosAMutar);
-        createTableG(mutaciones, "mutaciones")
+        reproduccion = performCrossover(seleccion.Mapa);
 
-        reproduccion = reproducir(nf, nc, nPoblacion, mutaciones);
+        //console.log(reproduccion);
 
-        createTableMutaciones(reproduccion.map(reproduccion => reproduccion.capaCodificacion.flat()), "reproduccion");
+        //mutaciones = mutacion(seleccion.Mapa, elementosAMutar);
+        //createTableG(mutaciones, "mutaciones")
+
+        reproduccion = offspring(nf, nc, reproduccion);
+        //console.log("offspring: ", reproduccion);
+
+        //createTableMutaciones(reproduccion.map(reproduccion => reproduccion.capaCodificacion.flat()), "reproduccion");
 
         codigoMapa = seleccion.Mapa[0];
+        
         const mapaCodificado = crearMapaCodificado(8, 8, seleccion.Mapa[0]);
+
 
         const cosechaTotalCodificado = calcularCosecha(
             mapaCodificado.capaPlantas,
