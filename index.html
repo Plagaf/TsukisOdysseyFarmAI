@@ -1,34 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> </head>
-    <title>Simulador1</title>
+    <title>Simulador y algoritmo genético para granja de Tusky Oddisey</title>
+    <meta charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
         font-family: sans-serif;
         display: flex;
         flex-direction: column;
       }
-
       .container {
         display: block;
         width: 100%;
         height: 100vh;
         flex-direction: column;
       }
-
       .first-row {
         display: flex; /* Crea una fila para la sección de input y el mapa */
       }
-
       .input-section {
         width: 20%;
         padding: 20px;
         border: 1px solid #ccc;
         margin: 10px;
+      }
+.poblacion-pre {
+  margin: 0;
+}
+      .restricciones-section {
+        width: 1000%;
+        padding: 20px;
+        border: 1px solid #ccc;
+        margin: 10px;
+        display: flex;
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan en varias líneas si es necesario */
+        gap: 10px;
+      }
+      .restricciones-section label {
+        flex-basis: 100px; /* Ancho base para las etiquetas */
+        flex-shrink: 0; /* Evita que las etiquetas se encojan */
+      }
+      .restricciones-section input[type="number"] {
+        flex-grow: 1; /* Permite que los inputs se expandan para llenar el espacio disponible */
+        box-sizing: border-box;
+      }
+
+      .restricciones-section button {
+        width: 100%; /* Ocupa todo el ancho */
+        margin-top: 10px;
+      }
+
+      fieldset {
+        border: 1px solid #54a8e0; /* Borde azul */
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+      }
+
+      legend {
+        font-weight: bold;
+        padding: 5px 10px;
+        background-color: #54a8e0; /* Fondo azul */
+        color: white;
+        border-radius: 5px; /* Bordes redondeados en la leyenda */
       }
 
       .log-section {
@@ -36,17 +73,13 @@
         padding: 20px;
         border: 1px solid #ccc;
         margin: 10px;
-
         max-height: 450px;
         overflow-y: scroll;
-
       }
-
       .input-section label {
         display: block;
         margin-bottom: 5px;
       }
-
       .input-section input[type="number"] {
         width: 100%;
         padding: 8px;
@@ -54,7 +87,6 @@
         border: 1px solid #ccc;
         border-radius: 4px;
       }
-
       .input-section input[type="text"] {
         width: 100%;
         padding: 8px;
@@ -62,7 +94,6 @@
         border: 1px solid #ccc;
         border-radius: 4px;
       }
-
       .input-section button {
         padding: 10px 20px;
         background-color: #4caf50;
@@ -71,65 +102,54 @@
         border-radius: 4px;
         cursor: pointer;
       }
-
       .map-section {
         width: 60%;
         padding: 20px;
         border: 1px solid #ccc;
         margin: 10px;
       }
-
       #mapa-svg {
         border: 1px solid #ccc;
       }
       #mapa-svg-codificado {
         border: 1px solid #ccc;
       }
-
-      #grafOpt{
+      #grafOpt {
         width: 600px;
         height: auto;
-
       }
-
       .list {
         padding: 20px;
         border: 1px solid #ccc;
         margin: 10px;
       }
-
       .calculation {
         width: 20%;
         padding: 20px;
         border: 1px solid #ccc;
         margin: 10px;
       }
-
       #myCanvas {
         display: block;
         background-color: lightcyan;
         width: 1px;
         height: 1px;
       }
-
       table {
         width: 100%;
         border-collapse: collapse;
         font-family: sans-serif;
       }
-
       th,
       td {
         text-align: left;
         padding: 8px;
         border: 1px solid #ddd;
       }
-
       tr:first-child {
         background-color: #f2f2f2;
         font-weight: bold;
       }
-
       tr:nth-child(even) {
         background-color: #f9f9f9;
       }
@@ -138,23 +158,19 @@
         background-color: #e0e0e0; /* Color de fondo gris claro */
         font-weight: bold; /* Texto en negrita */
       }
-
       #decodificador {
         margin-top: 20px;
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 5px;
       }
-
       #decodificador h2 {
         margin-bottom: 10px;
       }
-
       #decodificador label {
         display: block;
         margin-bottom: 5px;
       }
-
       #decodificador input[type="text"],
       #decodificador input {
         width: 100%;
@@ -163,7 +179,6 @@
         border: 1px solid #ccc;
         border-radius: 3px;
       }
-
       #decodificador button {
         padding: 10px 20px;
         background-color: #4caf50;
@@ -172,11 +187,9 @@
         border-radius: 3px;
         cursor: pointer;
       }
-
       #decodificador button:hover {
         background-color: #45a049;
       }
-
       #resultadoUPH {
         margin-top: 10px;
         font-weight: bold;
@@ -185,44 +198,91 @@
   </head>
   <body>
     <div class="container">
+      <h1>Restricciones</h1>
+      <div class="first-row">
+        <div class="restricciones-section">
+          <form id="restriccionesForm">
+            <fieldset>
+              <legend>Información General</legend>
+              <label for="Plantable">Plantable:</label>
+              <input type="number" id="Plantable" name="Plantable" value="66" required>
+              <label for="Cero">Cero:</label>
+              <input type="number" id="Cero" name="Cero" value="999" required >
+            </fieldset>
+            <fieldset>
+              <legend>Uv</legend>
+              <label for="GG">Giga Grow:</label>
+              <input type="number" id="GG" name="GG" value="2" required>
+              <label for="MG">Mega Grow:</label>
+              <input type="number" id="MG" name="MG" value="5" required>
+            </fieldset>
+            <fieldset>
+              <legend>Aspersores</legend>
+              <label for="LS">Line Sprikler:</label>
+              <input type="number" id="LS" name="LS" value="4" required>
+              <label for="RS">Rrotary Sprinkler:</label>
+              <input type="number" id="RS" name="RS" value="2" required>
+            </fieldset>
+            <fieldset>
+              <legend>Fertilizantes</legend>
+
+              <label for="GF">Goat Fertilizer:</label>
+              <input type="number" id="GF" name="GF" value="99" required >
+              <label for="BF">Bull Fertilizer:</label>
+              <input type="number" id="BF" name="BF" value="99" required >
+              <label for="EF">Goat Fertilizer:</label>
+              <input type="number" id="EF" name="EF" value="9" required >
+            </fieldset>
+            <fieldset>
+              <legend>Plantas</legend>
+              <label for="C">Calabaza:</label>
+              <input type="number" id="C" name="C" value="0" required >
+              <label for="S">Sandías:</label>
+              <input type="number" id="S" name="S" value="0" required >
+              <label for="Z">Zanahorias:</label>
+              <input type="number" id="Z" name="Z" value="66" required >
+              <label for="P">Papas:</label>
+              <input type="number" id="P" name="P" value="20" required >
+              <label for="U">Uvas:</label>
+              <input type="number" id="U" name="U" value="20" required >
+              <label for="N">Nabos:</label>
+              <input type="number" id="N" name="N" value="20" required >
+              <label for="F">Fresas:</label>
+              <input type="number" id="F" name="F" value="0" required >
+            </fieldset>
+          </form>
+        </div>
+      </div>
       <h1>Simulador1</h1>
       <div class="first-row">
         <div class="input-section">
           <h2>Configuración del Mapa</h2>
           <label for="filas">Filas:</label>
-          <input type="number" id="filas" value="10" />
-
+          <input type="number" id="filas" value="10" >
           <label for="columnas">Columnas:</label>
-          <input type="number" id="columnas" value="10" />
-
+          <input type="number" id="columnas" value="10" >
           <label for="plantas">Plantas:</label>
-          <input type="number" id="plantas" value="1" />
-
+          <input type="number" id="plantas" value="1" >
           <label for="modificadores">Modificadores:</label>
-          <input type="number" id="modificadores" value="1" />
-
+          <input type="number" id="modificadores" value="1" >
           <button id="boton-generar">Generar Mapa</button>
         </div>
-
         <div class="map-section">
           <h2>Mapa SVG</h2>
           <svg id="mapa-svg"></svg>
         </div>
-
         <div class="calculation">
           <h2>Cálculo Total</h2>
           <p>Utilidad total: <span id="utilidadTotal">0</span></p>
           <p>Cosecha por hora: <span id="cosechaUph">0</span></p>
           <p>Total cosechado: <span id="totalCosechado">0</span></p>
-          <p>Cóidgo mapa: <span id="coidgoMapaAleatorio">0</span></p>
+          <p>Código mapa: <div><span id="coidgoMapaAleatorio">0</span></div></p>
         </div>
       </div>
-
       <div class="list">
         <h2>Listado Modificadores</h2>
         <table id="listado-modificadores"></table>
       </div>
-
       <div class="list">
         <h2>Listado de Cosecha</h2>
         <table id="listado-plantas"></table>
@@ -231,21 +291,16 @@
       <div class="first-row">
         <div class="input-section">
           <label for="anchoMapa">Ancho del mapa:</label>
-          <input type="number" id="anchoMapa" value="8" />
-          <br />
+          <input type="number" id="anchoMapa" value="8" >
+          <br>
           <label for="largoMapa">Largo del mapa:</label>
-          <input type="number" id="largoMapa" value="8" />
-          <br />
+          <input type="number" id="largoMapa" value="8" >
+          <br>
           <label for="codigoMapa">Código del mapa:</label>
-          <input
-            type="text"
-            id="codigoMapa"
-            placeholder="Ingresa el código del mapa"
-            value="C, C, C, C, C, c, c, ggw, C, c, c, 0, c, c, C, C"
-          />
-          <br />
+          <input type="text" id="codigoMapa" placeholder="Ingresa el código del mapa" value="C, C, C, C, C, c, c, ggw, C, c, c, 0, c, c, C, C">
+          <br>
           <button id="calcularUPH">Calcular UPH</button>
-          <br />
+          <br>
           <div id="resultadoUPH">UPH:</div>
         </div>
         <div>
@@ -261,49 +316,58 @@
           </div>
         </div>
       </div>
+      <div class="first-row">
         <div class="input-section">
-          <button id="generacionbtn">Calcular UPH</button>
-          <br />
+          <button id="generacionbtn">Población inicial</button>
+          <button id="resetGA">Reset</button>
+          <label for="nPoblacion">Población:</label>
+          <input type="number" id="nPoblacion" value="10" >
+          <label for="tamSeleccion">Tamaño selección:</label>
+          <input type="number" id="tamSeleccion" value="2" >
+          <label for="coRate">Crossover rate (%):</label>
+          <input type="number" id="coRate" value="80" >
+          <label for="mutacionProb">Mutación rate (%):</label>
+          <input type="number" id="mutacionProb" value=".1" >
+          <label for="nf">Filas:</label>
+          <input type="number" id="nf" value="4" >
+          <label for="nc">Columnas:</label>
+          <input type="number" id="nc" value="4" >
+          <button id="evolucionbtn">Evolucionar</button>
+          <br>
+          <br>
+          <br>
+          <label for="evolucionesLoop">Evoluciones:</label>
+          <input type="number" id="evolucionesLoop" value="100" >
+          <br>
+          <button id="evolucionLoopbtn">Loop evolución</button>
+          <div id="mejorPuntuacionAbs">Mejor puntuación:</div>
           <div id="generacion">Generacion:</div>
-          <div id="mejoresPuntuaciones">Mejores:</div>
-        </div>
-        <div class="log-section">
-          <h1>Población:</h1>
-          <div id="poblacion">
-            
-            <br />
-          </div>
-        </div>
-        <div class="log-section">
-          <h1>Selección:</h1>
-          <div id="seleccion">
-            
-            <br />
-          </div>
-        </div>
-        <div class="log-section">
-          <h1>Evaluacion:</h1>
-          <div id="evaluacion">
-            
-            <br />
-          </div>
-        </div>
-        <div class="log-section">
-          <h1>Mutaciones:</h1>
-          <div id="mutaciones">
-            
-            <br />
-          </div>
-        </div>
-        <div class="log-section">
-          <h1>Reproduccion:</h1>
-          <div id="reproduccion">
-            
-            <br />
-          </div>
         </div>
       </div>
-
+      <div class="log-section">
+        <h1>Población:</h1>
+        <div id="poblacion">
+          <br>
+        </div>
+      </div>
+      <div class="log-section">
+        <h1>Selección:</h1>
+        <div id="seleccion">
+          <br>
+        </div>
+      </div>
+      <div class="log-section">
+        <h1>Evaluacion:</h1>
+        <div id="evaluacion">
+          <br>
+        </div>
+      </div>
+      <div class="log-section">
+        <h1>mejoresPuntuaciones por generación:</h1>
+        <div id="mejoresPuntuaciones">:</div>
+        <br>
+      </div>
+    </div>
     <script src="apoachCapas.js"></script>
   </body>
 </html>
