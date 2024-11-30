@@ -1,5 +1,5 @@
 
-const MODIFICADOR = "M";
+const MODIFICADOR = "X";
 const PLANTA = "P";
 const AREA_EFECTO = "E";
 
