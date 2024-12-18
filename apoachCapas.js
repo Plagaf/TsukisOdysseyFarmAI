@@ -106,7 +106,7 @@ const ladosV = [
 class Objeto {
 
     constructor(
-        { nombre, clase, tipo, codigo, costo, imagen, placeHolder, orientacion, color, formaAoE, precio, esConsumible, efectoCosecha, efectoTiempo, qtyCompra, qtyVenta, tiempo, reduccionTiempo }
+        { nombre, clase, tipo, codigo, costo, imagen, placeHolder, numCeldas, orientacion, color, formaAoE, precio, esConsumible, efectoCosecha, efectoTiempo, qtyCompra, qtyVenta, tiempo, reduccionTiempo }
     ) {
         this.nombre = nombre;
         this.clase = clase; //Planta o Modificador
@@ -130,6 +130,7 @@ class Objeto {
         this.utilidadUnitaria = this.calcularUtilidadUnitaria();
         this.utilidautilidadTotaldUnitaria = this.calcularUtilidadTotal();
         this.uPH = this.calcularUpH();
+        this.numCeldas = numCeldas;
     }
 
     calcularUtilidadUnitaria() {
@@ -161,29 +162,7 @@ class Objeto {
     }
 }
 
-class ObjPlaceHolder extends Objeto {
-    constructor(options = { nombre: "X", codigo: "X", clase: "H", tipo: "", imagen: null, placeHolder: "", orientacion: "", color: "red", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }) {
-        super(options);
-    }
-}
 
-
-class Planta {
-    constructor(nombre, tipo, utUnitaria, utPromedio, uPH, tiempoCosecha, cantidadCosecha, color, forma, codigo, modificador) {
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.utUnitaria = utUnitaria;
-        this.utPromedio = utPromedio;
-        this.uPH = uPH;
-        this.tiempoCosecha = tiempoCosecha;
-        this.cantidadCosecha = cantidadCosecha;
-        this.color = color;
-        this.forma = forma;
-        this.codigo = codigo;
-        this.tipoObjeto = PLANTA;
-        this.modificador = modificador;
-    }
-}
 
 class Celda {
     constructor(objeto, cosecha, conUV, conFertilizante, conAgua, conFresa, uvTiempo, uvCosecha, fertTiempo, fertCosecha, aguaTiempo, fresaTiempo, colorAdicional) {
@@ -227,67 +206,77 @@ function crearObjetoProxy(objeto) {
     });
 }
 
-const poolModificadores = [
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", orientacion: "N", color: "#FFC0CB", formaAoE: barraN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", orientacion: "W", color: "#FFC0CB", formaAoE: barraW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", orientacion: "S", color: "#FFC0CB", formaAoE: barraS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", orientacion: "E", color: "#FFC0CB", formaAoE: barraE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, orientacion: "N", color: "#AA336A", formaAoE: posteN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, orientacion: "W", color: "#AA336A", formaAoE: posteW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, orientacion: "S", color: "#AA336A", formaAoE: posteS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, orientacion: "E", color: "#AA336A", formaAoE: posteE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
 
-    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", orientacion: "V", color: "#9F2B68", formaAoE: ladosV, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", orientacion: "H", color: "#9F2B68", formaAoE: ladosH, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Rotary Sprinkler", codigo: "RS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", orientacion: "", color: "#800020", formaAoE: dona, efectoTiempo: 0.8, efectoCosecha: 0, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
 
-    new Objeto({ nombre: "Goat Fertilizer", codigo: "GF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: null, orientacion: "", color: "#CD7F32", formaAoE: dona, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Bull Fertilizer", codigo: "BF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: "medio", orientacion: "", color: "#A52A2A", formaAoE: donaM, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 1500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Elephant Fertilizer", codigo: "EF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: "grande", orientacion: "", color: "#DAA06D", formaAoE: donaG, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 4500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 })
+const poolGGs = [
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "N", color: "#FFC0CB", formaAoE: barraN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "W", color: "#FFC0CB", formaAoE: barraW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "S", color: "#FFC0CB", formaAoE: barraS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "E", color: "#FFC0CB", formaAoE: barraE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 })
+]
+
+
+const poolMGs = [
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "N", color: "#AA336A", formaAoE: posteN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "W", color: "#AA336A", formaAoE: posteW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "S", color: "#AA336A", formaAoE: posteS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "E", color: "#AA336A", formaAoE: posteE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+]
+
+
+const poolLSs = [
+    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", numCeldas: 3, orientacion: "V", color: "#9F2B68", formaAoE: ladosV, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", numCeldas: 3, orientacion: "H", color: "#9F2B68", formaAoE: ladosH, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
 
 ]
+
+const poolRSs = [
+    new Objeto({ nombre: "Rotary Sprinkler", codigo: "RS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#800020", formaAoE: dona, efectoTiempo: 0.8, efectoCosecha: 0, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+
+]
+
+const poolFertilizers = [
+    new Objeto({ nombre: "Goat Fertilizer", codigo: "GF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#CD7F32", formaAoE: dona, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Bull Fertilizer", codigo: "BF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: "medio", numCeldas: 4, orientacion: "", color: "#A52A2A", formaAoE: donaM, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 1500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Elephant Fertilizer", codigo: "EF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: "grande", numCeldas: 9, orientacion: "", color: "#DAA06D", formaAoE: donaG, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 4500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 })
+]
+
+//Sé que se puede crear un pool directo con todos los elementos en lugar de concatenar, pero se requiere un pool separado por modificador rotable para obtener aleatoriamente cada rotación.
+//probablemente sea mejor tener una función que los rote y así aleatoriamente elegiría una orientación, sin embargo, creo que tendría un costo computacional en lugar de memoria
+const poolModificadores = poolGGs.concat(poolMGs).concat(poolLSs).concat(poolRSs).concat(poolFertilizers);
+
 
 const poolPlantas = [
-    crearObjetoProxy(new Objeto({ nombre: "Sandía", codigo: "S", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#03a572", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 300, precio: 200, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 6, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Calabaza", codigo: "C", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#FF7518", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 250, precio: 100, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Sandía", codigo: "S", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#03a572", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 300, precio: 200, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 6, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Calabaza", codigo: "C", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#FF7518", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 250, precio: 100, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
 
-    crearObjetoProxy(new Objeto({ nombre: "Zanahoria", codigo: "Z", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#FFC000", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 20, esConsumible: false, qtyCompra: 1, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Papa", codigo: "P", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#4C3228", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 11, tiempo: 1, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Uva", codigo: "U", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#4c00b0", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 4, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 2, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Nabo", codigo: "N", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#c3c8ac", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 22, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Zanahoria", codigo: "Z", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#FFC000", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 20, esConsumible: false, qtyCompra: 1, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Papa", codigo: "P", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#4C3228", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 11, tiempo: 1, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Uva", codigo: "U", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#4c00b0", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 4, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Nabo", codigo: "N", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#c3c8ac", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 22, tiempo: 2, reduccionTiempo: 0 })),
 
-    crearObjetoProxy(new Objeto({ nombre: "Lunar", codigo: "L", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#F0EAD6", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 5, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Lunar", codigo: "L", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#F0EAD6", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 5, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0 })),
 
-    crearObjetoProxy(new Objeto({ nombre: "Fresa", codigo: "F", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#e42e67", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 2, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0.5 })),
-    crearObjetoProxy(new Objeto({ nombre: "Cebolla", codigo: "O", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, orientacion: "", color: "#F0EA00", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 3, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 3, reduccionTiempo: 0 }))
+    crearObjetoProxy(new Objeto({ nombre: "Fresa", codigo: "F", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#e42e67", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 2, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0.5 })),
+    crearObjetoProxy(new Objeto({ nombre: "Cebolla", codigo: "O", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#F0EA00", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 3, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 3, reduccionTiempo: 0 }))
 
 ]
 
-const placeHolderObj = new Objeto({ nombre: "X", codigo: "X", clase: "H", tipo: "", imagen: null, placeHolder: "", orientacion: "", color: "", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0 })
+class ObjPlaceHolder extends Objeto {
+    constructor(options = { nombre: "X", codigo: "X", clase: "H", tipo: "", imagen: null, placeHolder: "", orientacion: "", color: "red", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }) {
+        super(options);
+    }
+}
 
-const florObj = new Objeto({ nombre: "Flor", codigo: "R", clase: "F", tipo: "Flor", imagen: null, placeHolder: null, orientacion: "", color: "#FFEBED", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0 })
+class Flor extends Objeto {
+    constructor(options = { nombre: "Flor", codigo: "R", clase: "R", tipo: "Flor", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#FFEBED", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }) {
+        super(options);
+    }
+}
 
 
 const poolObjetos = poolModificadores.concat(poolPlantas);
 
-
-
-class Modificador {
-    constructor(nombre, costo, efectoTiempo, efectoCosecha, forma, tipoModificador, codigo) {
-        this.nombre = nombre;
-        this.costo = costo;
-        this.efectoTiempo = efectoTiempo;
-        this.efectoCosecha = efectoCosecha;
-        this.forma = forma;
-        this.tipoModificador = tipoModificador;
-        this.codigo = codigo;
-        this.tipoObjeto = MODIFICADOR;
-        this.color = "#F00";
-        this.uPH = 0;
-
-        if (tipoModificador == "Fertilizer") { this.uPH = -(this.costo / 24) } else { this.uPH = 0 };
-    }
-}
 
 class AreaEfecto {
     constructor(forma) {
@@ -315,6 +304,7 @@ class Restricciones {
         this.F = F;
         this.O = O;
         this.L = L;
+        this.R = this.O * 8;
     }
 }
 
@@ -597,9 +587,10 @@ function getCebollasExtras(mapa, fila, columna) {
     let papasExtra = 0;
 
     posicionesVecinas.forEach(([filaActual, columnaActual]) => {
+        //console.log(mapa[filaActual][columnaActual].objeto);
         if (
             mapa[filaActual][columnaActual].objeto &&
-            mapa[filaActual][columnaActual].objeto.clase === PLANTA
+            mapa[filaActual][columnaActual].objeto.clase === "R"
         ) {
             papasExtra++;
         }
@@ -666,12 +657,38 @@ function generarModificadorAleatorio() {
 
 }
 
-function generarObjetoAleatorio() {
-    const indiceAleatorio = Math.floor(Math.random() * poolObjetos.length);
-    const tipoObjeto = poolObjetos[indiceAleatorio];
 
-    return tipoObjeto;
 
+function crearPoolObjetos(limites, poolGGs, poolMGs, poolLSs) {
+    let pool = [];
+
+    //const modificador = poolObjetos.find(mod => mod.codigoLargo === codigoLargo);
+
+    const limitesFiltrados = limites.filter(limite => limite.elemento !== "Cero" && limite.elemento !== "Plantable");
+
+    for (const limite of limitesFiltrados) {
+        let cantidadAAgregar = limite.cantidad;
+        for (let i = 0; i < cantidadAAgregar; i++) {
+            if (limite.elemento == "GG") {
+                pool.push(poolGGs[Math.floor(Math.random() * poolGGs.length)]);
+            } else if (limite.elemento == "MG") {
+                pool.push(poolMGs[Math.floor(Math.random() * poolMGs.length)]);
+            } else if (limite.elemento == "LS") {
+                pool.push(poolLSs[Math.floor(Math.random() * poolLSs.length)]);
+            } else if (limite.elemento == "R") {
+                continue;
+            } else if (limite.elemento == "O") {
+                pool.push(getObjetoPorCodigo("O"));
+                for (let flores = 0; flores < 8; flores++) {
+                    pool.push(new Flor());
+                }
+            } else {
+                pool.push(getObjetoPorCodigo(limite.elemento));
+            }
+
+        }
+    }
+    return pool;
 }
 
 
@@ -685,6 +702,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
     const geografia = Array.from({ length: filas }, () => Array(columnas).fill(true));
 
     let mapaGeografia = [];
+    let celdasUsadas = 0;
 
     for (let i = 0; i < filas; i++) {
         mapaGeografia[i] = []; // Inicializar cada fila del mapa
@@ -705,6 +723,11 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
         limite.colocados = 0;
     })
 
+    //console.log(limites);
+    let poolObjetosMapa = crearPoolObjetos(limites, poolGGs, poolMGs, poolLSs);
+
+    //console.log(poolObjetosMapa);
+
     ///// IMPORTANTE PARE EVITAR BUCLE INFINITO
     const limitesModificadores = (
         restricciones.GF + restricciones.BF + restricciones.EF +
@@ -718,6 +741,10 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
         restricciones.L
     );
 
+    const numFlores = (
+        restricciones.R
+    );
+
 
     if (numPlantas > limitesPlantas) {
         numPlantas = limitesPlantas;
@@ -727,37 +754,55 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
 
     let plantasColocadas = 0;
     let modificadoresColocados = 0;
-    let intentos = filas * columnas * 7 * 2; // Intentos máximos para ambos
+    let floresColocadas = 0;
+    let intentosOriginal = filas * columnas * 7;
+    let intentos = filas * columnas * 7; // Intentos máximos para ambos
 
     while (
         intentos > 0 &&
         (plantasColocadas != numPlantas || modificadoresColocados != numModificadores) &&
         (plantasColocadas != limitesPlantas || modificadoresColocados != limitesModificadores)
+         &&(plantasColocadas + modificadoresColocados + floresColocadas) != (filas*columnas)
     ) {
-        /*
-        console.log("intentos",intentos,"plantasColocadas",plantasColocadas,"modificadoresColocados",modificadoresColocados,"numPlantas",numPlantas,
-            "numModificadores",numModificadores,"limitesPlantas",limitesPlantas,"limitesModificadores",limitesModificadores);
-            */
-        const colocarPlanta = Math.random() < 0.5 && plantasColocadas < numPlantas && plantasColocadas < limitesPlantas; // 85% de probabilidad si aún se pueden colocar plantas
 
-        let objeto, limiteObjeto, indexObjeto, colocados;
+        let randomIndex = Math.floor(Math.random() * poolObjetosMapa.length);
+        let objeto = poolObjetosMapa[randomIndex];
 
-        if (colocarPlanta) {
-            objeto = generarPlantaAleatoria();
-        } else if (modificadoresColocados < numModificadores) { // Intenta colocar un modificador si no se colocó una planta y aún se pueden colocar modificadores
-            objeto = generarModificadorAleatorio();
-        } else { // No se pueden colocar ni plantas ni modificadores, salta la iteracion
-            //no pudo colocar ni planta y límite de modificador topado
-            intentos--;
-            continue;
-        }
+        //console.log("intentando colocar: ", objeto.nombre);
+
+        //console.log(poolObjetosMapa);
+        //console.log(objeto);
+        //console.log(objeto.codigo);
 
         limiteObjeto = limites.find((element) => element.elemento == objeto.codigo).cantidad;
+        
         indexObjeto = limites.findIndex((element) => element.elemento == objeto.codigo);
         colocados = limites.find((element) => element.elemento == objeto.codigo).colocados;
 
         if (colocados >= limiteObjeto) {
-            //console.log("supera límite");
+            //console.log("supera límite elemento");
+            poolObjetosMapa.splice(randomIndex, 1);
+            intentos--;
+            continue;
+        } else if (objeto.clase == PLANTA && plantasColocadas >= numPlantas) {
+            //console.log("supera límite plantas");
+            poolObjetosMapa.splice(randomIndex, 1);
+            intentos--;
+            continue;
+        } else if (objeto.clase == MODIFICADOR && modificadoresColocados >= numModificadores) {
+
+            //console.log("supera límite modificadores");
+            poolObjetosMapa.splice(randomIndex, 1);
+            intentos--;
+            continue;
+        } else if ((objeto.numCeldas + celdasUsadas) > (filas * columnas)) {
+            //console.log("espacios a usar exceden disponible",objeto.numCeldas , filas*columnas);
+            //poolObjetosMapa.splice(randomIndex, 1);
+            intentos--;
+            continue;
+        } else if (objeto.clase == "R" && (limites.find((element) => element.elemento == "O").colocados) == 0) {
+            //console.log("sin cebollas no se puede colocar flores",limites.find((element) => element.elemento == "O").colocados);
+            poolObjetosMapa.splice(randomIndex, 1);
             intentos--;
             continue;
         }
@@ -765,6 +810,8 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
         const posicion = generarPosicionAleatoria(filas, columnas, true);
         const fila = posicion[0];
         const columna = posicion[1];
+
+        //console.log("intentando colocar: ", objeto, "en: ", posicion);
 
         //console.log("objeto elegido",  objeto.nombre, "posición:",fila,columna)
         if (celdaLibre(mapaGeografia, fila, columna)) {
@@ -783,12 +830,13 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
                     //console.log("coordenadas.celdasEnRango",coordenadas.celdasEnRango);
                     continue;
                 } else {
-                    const celdasAOcupar = getPlaceHolderCells(mapaGeografia, objeto, fila, columna);
-                    if (cabe(mapaGeografia, celdasAOcupar.celdasPlaceHolder)) {
+                    //const celdasAOcupar = getPlaceHolderCells(mapaGeografia, objeto, fila, columna);
+                    if (cabe(mapaGeografia, coordenadas.celdasPlaceHolder)) {
                         //console.log("cabe", objeto.nombre);
                         llenarConPlaceHolders(mapaGeografia, coordenadas.celdasPlaceHolder, ObjPlaceHolder);
                     } else {
                         // console.log("no cabe", objeto.nombre);
+
                         continue;
                     }
                 }
@@ -797,18 +845,32 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
             }
             //console.log("objeto colocado", objeto.nombre);
 
+            poolObjetosMapa.splice(randomIndex, 1);
+
             mapaGeografia[fila][columna].objeto = objeto;
 
+            celdasUsadas += objeto.numCeldas;
+
+            //console.log("celdasUsadas", celdasUsadas);
+
+            if (celdasUsadas >= filas * columnas) {
+                //console.log("máximo celdas usadas, forzando salida intentos = 0");
+                break;
+            }
+
             limites[indexObjeto].colocados++;
-            if (colocarPlanta) {
+            if (objeto.clase == PLANTA) {
                 plantasColocadas++;
-            } else {
+            } if (objeto.clase == MODIFICADOR) {
                 modificadoresColocados++;
+            }if (objeto.clase == "R") {
+                floresColocadas++;
             }
         } else {
             //console.log("celda ocupada");
         }
         intentos--;
+
 
         /*console.log(
             "condición",(plantasColocadas < numPlantas || modificadoresColocados < numModificadores) &&
@@ -820,7 +882,9 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
         );*/
     }
 
-    //console.log("intentos final", intentos);
+    //console.log(poolObjetosMapa);
+
+    //console.log("intentos final", intentosOriginal-intentos, intentosOriginal, ((intentos)/intentosOriginal));
 
     mapaGeografia.forEach((fila, indiceFila) => {
         fila.forEach((celda, indiceColumna) => {
@@ -858,7 +922,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
 }
 
 
-function obtenerObjetoPorCodigo(codigoLargo) {
+function getObjetoPorCodigo(codigoLargo) {
     // Busca en los tipos de modificadores
     const modificador = poolModificadores.find(mod => mod.codigoLargo === codigoLargo);
     if (modificador) {
@@ -874,6 +938,10 @@ function obtenerObjetoPorCodigo(codigoLargo) {
     // Busca en los tipos de plantas
     if (codigoLargo == "X" || codigoLargo == "X") {
         return new ObjPlaceHolder();
+    }
+
+    if (codigoLargo == "r" || codigoLargo == "R") {
+        return new Flor();
     }
 
     // Si no se encuentra el objeto, devuelve null
@@ -934,8 +1002,8 @@ function calcularMapa(mapaGeografia) {
                     mapaGeografia[i][j].modTiempo = (mapaGeografia[i][j].fertTiempo) * (mapaGeografia[i][j].uvTiempo) * (mapaGeografia[i][j].aguaTiempo);
                 };
 
-                if (mapaGeografia[i][j].objeto.codigo === "O") {
-                    mapaGeografia[i][j].cebollasExtra = getCebollasExtras(mapaGeografia,i,j);
+                if (mapaGeografia[i][j].objeto.codigo === "O" || mapaGeografia[i][j].objeto.codigo === "o") {
+                    mapaGeografia[i][j].cebollasExtra = getCebollasExtras(mapaGeografia, i, j);
                 };
 
                 mapaGeografia[i][j].adicionalPorFresa = (mapaGeografia[i][j].fresaTiempo ?? 0) / mapaGeografia[i][j].objeto.tiempo
@@ -1405,7 +1473,7 @@ function crearMapaCodificado(filas, columnas, codigoMapa, restricciones = new Re
 
     for (let fila = 0; fila < matriz.length; fila++) {
         for (let columna = 0; columna < matriz[fila].length; columna++) {
-            const objeto = obtenerObjetoPorCodigo(matriz[fila][columna]);
+            const objeto = getObjetoPorCodigo(matriz[fila][columna]);
 
             if (!objeto) continue;
 
@@ -1991,9 +2059,9 @@ if (1 === 1) {
         document.getElementById("mejorPuntuacionAbs").innerHTML = "";
         document.getElementById("mejorPuntuacionAbs").innerHTML = JSON.stringify(mejorPuntuacionAbs);
 
-        createTableUPHMapa(evaluado, "evaluacion");
-        createTableMejoresResultados(mejoresPuntuaciones, "mejoresPuntuaciones");
-        updateFitPlot(mejoresPuntuaciones);
+        //createTableUPHMapa(evaluado, "evaluacion");
+        //createTableMejoresResultados(mejoresPuntuaciones, "mejoresPuntuaciones");
+        //updateFitPlot(mejoresPuntuaciones);
 
         poblacionIni = performCrossover(seleccion.Mapa, coRate, mutacionProb, restricciones);
         poblacionIni = offspring(nf, nc, poblacionIni, restricciones);
@@ -2030,6 +2098,7 @@ if (1 === 1) {
             botonGA.click();
 
         }
+        updateFitPlot(mejoresPuntuaciones);
     });
 
 
