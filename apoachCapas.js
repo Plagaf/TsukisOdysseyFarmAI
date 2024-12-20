@@ -741,11 +741,6 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
         restricciones.L
     );
 
-    const numFlores = (
-        restricciones.R
-    );
-
-
     if (numPlantas > limitesPlantas) {
         numPlantas = limitesPlantas;
     } else if (numPlantas > restricciones.Plantable) {
@@ -772,7 +767,9 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
 
         //console.log(poolObjetosMapa);
         //console.log(objeto);
-        //console.log(objeto.codigo);
+        //console.log(objeto, objeto.codigo);
+
+
 
         limiteObjeto = limites.find((element) => element.elemento == objeto.codigo).cantidad;
         
@@ -802,7 +799,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
             continue;
         } else if (objeto.clase == "R" && (limites.find((element) => element.elemento == "O").colocados) == 0) {
             //console.log("sin cebollas no se puede colocar flores",limites.find((element) => element.elemento == "O").colocados);
-            poolObjetosMapa.splice(randomIndex, 1);
+            //poolObjetosMapa.splice(randomIndex, 1);
             intentos--;
             continue;
         }
@@ -1032,8 +1029,11 @@ function calcularMapa(mapaGeografia) {
 
         * 100) / 100;
 
+            
+    const listaTiempos = mapaGeografia.flatMap(fila => fila.map(celda => celda?.totalTiempo));
 
-    return { mapaGeografia, cosechaTotal, cosechaUph };
+
+    return { mapaGeografia, cosechaTotal, cosechaUph ,listaTiempos};
 }
 
 
@@ -1293,6 +1293,8 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
     const frecuencias = {};
     const mapaOriginal = [...codigoMapa];
 
+    //console.log(mapaOriginal);
+
     let i = 0;
     for (const elemento of codigoMapa) {
         // Convertir 0 a string para mantener la consistencia
@@ -1300,16 +1302,23 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
         frecuencias[clave] = (frecuencias[clave] || 0) + 1;
     }
 
-    // 3. Descontar los ceros basándonos en las frecuencias de GG y LS
-    const cerosOcupados = (frecuencias['GG'] || 0) + (frecuencias['LS'] || 0) + (frecuencias['LS'] || 0);
-    frecuencias["0"] = (frecuencias["0"] || 0) - cerosOcupados;
+    //console.log(codigoMapa);
 
-    if (frecuencias["0"] < 0) {
+    // 3. Descontar los ceros basándonos en las frecuencias de GG y LS
+    const cerosOcupados = (frecuencias['X'] || 0);
+
+    //console.log(frecuencias);
+
+   // frecuencias[" "] = (frecuencias["0"] || 0) - cerosOcupados;
+
+   /*
+   if (frecuencias["0"] < 0) {
         frecuencias["0"] = 0;
     }
+        */
 
     const espaciosUtilizados = Object.values(frecuencias)
-        .filter((_, index) => Object.keys(frecuencias)[index] !== "0") //filtrar por la clave en la posición index
+        .filter((_, index) => Object.keys(frecuencias)[index] == "X") //filtrar por la clave en la posición index
         .reduce((acc, valor) => acc + valor, 0);
 
 
@@ -1317,6 +1326,11 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
     // Calcular la suma de los modificadores
     const sumaModificadores = modificadores.reduce((sum, mod) => sum + (frecuencias[mod] || 0), 0);
+
+    const totalPlantas = Object.entries(frecuencias)
+  .filter(([clave, _]) => clave !== " " && clave !== "X" && !modificadores.includes(clave))
+  .reduce((acc, [_, valor]) => acc + valor, 0);
+
 
     // Crear los límites a partir de las propiedades del objeto 'restricciones'
     const limites = Object.entries(restricciones)
@@ -1326,10 +1340,16 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
             cantidad
         }));
 
+
+
+        //console.log(limites);
+
     const cumpleLimitesIndividuales = !limites.some(limite => {
         const cantidadActual = frecuencias[limite.elemento] || 0;
         return cantidadActual > limite.cantidad;
     });
+
+    //console.log(cumpleLimitesIndividuales);
 
     const indicesPorElemento = {}; // Almacena los índices de cada elemento
 
@@ -1354,6 +1374,7 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
         // Si la cantidad de elementos supera el límite
         if (indices.length > cantidadMaxima) {
+            //console.log("supera");
             // Obtener los índices a sustituir aleatoriamente
             const indicesASustituir = [];
             while (indicesASustituir.length < indices.length - cantidadMaxima) {
@@ -1365,25 +1386,40 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
             // Sustituir los elementos en los índices seleccionados
             for (const indiceRelativo of indicesASustituir) {
-                codigoMapa[indices[indiceRelativo]] = 0;
+                codigoMapa[indices[indiceRelativo]] = " ";
             }
+            //console.log("coidgo sano", codigoMapa, "sustituciones", indicesASustituir);
+
         }
     }
 
     let cumpleLimitePlantable = true;
 
-    if ((espaciosUtilizados - sumaModificadores) <= restricciones.Plantable) {
+    //console.log("totalPlantas", totalPlantas, "modifiadores: ", sumaModificadores, "plantable:", restricciones.Plantable)
+
+    if ((totalPlantas) <= restricciones.Plantable) {
         cumpleLimitePlantable = true;
     } else {
+        //console.log("excedente", totalPlantas-restricciones.Plantable);
+
         cumpleLimitePlantable = false;
+
+        for (let index = 0; index < (totalPlantas-restricciones.Plantable); index++) {
+            const indiceAleatorio = Math.floor(Math.random() * codigoMapa.length);
+            if ( modificadores.indexOf(codigoMapa[indiceAleatorio]) === -1  ) {
+                codigoMapa[indiceAleatorio]= " ";
+            }
+        }
     }
 
     // Verificar si la suma de frecuencias (sin ceros) es menor o igual a Plantable
 
     const cumpleLimites = cumpleLimitesIndividuales && cumpleLimitePlantable;
 
-    //console.log(cumpleLimites, codigoMapa, mapaOriginal);
-
+    if(!cumpleLimites){
+        //console.log(cumpleLimites, codigoMapa, mapaOriginal);
+    }
+    
 
     return {
         cumpleLimites,
@@ -1460,8 +1496,10 @@ function crearMapaCodificado(filas, columnas, codigoMapa, restricciones = new Re
         }
     }
 
+    //console.log(restricciones);
+
     const mapaValidado = validarRestriccionesCodificacionMapa(codigoMapa, restricciones);
-    //console.log(mapaValidado);
+    console.log("mapaValidado",mapaValidado);
 
     if (!mapaValidado.cumpleLimites) {
         codigoMapa = mapaValidado.codigoMapa;
@@ -1706,27 +1744,7 @@ botonCalcularCodificado.addEventListener("click", function () {
     const columnas = parseInt(document.getElementById("largoMapa").value)
 
     const form = document.getElementById('restriccionesForm');
-    const restricciones = new Restricciones(
-        parseInt(form.Plantable.value, 10),
-        parseInt(form.Cero.value, 10),
-        parseInt(form.GG.value, 10),
-        parseInt(form.MG.value, 10),
-        parseInt(form.LS.value, 10),
-        parseInt(form.RS.value, 10),
-        parseInt(form.GF.value, 10),
-        parseInt(form.BF.value, 10),
-        parseInt(form.EF.value, 10),
-        parseInt(form.C.value, 10),
-        parseInt(form.S.value, 10),
-        parseInt(form.Z.value, 10),
-        parseInt(form.P.value, 10),
-        parseInt(form.U.value, 10),
-        parseInt(form.N.value, 10),
-        parseInt(form.F.value, 10),
-        parseInt(form.O.value, 10),
-        parseInt(form.L.value, 10),
-
-    );
+    const restricciones = obtenerRestricciones();
 
     // Plantable, Cero, GG, MG, LS, RS, GF,BF,EF, C, S, Z, P, U, N, F
     //const restricciones = new Restricciones(999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999);
@@ -1918,7 +1936,9 @@ function performCrossover(population, crossoverRate = 0.8, mutacionProb = 0.01, 
 
     for (let i = 0; i < populationSize; i += 2) {
         if (Math.random() < crossoverRate) {
-            const maxIntentos = 20;
+            
+            //const maxIntentos = 20;
+            const maxIntentos = population.length/2;
             let childrenFound = false; // Bandera para indicar si se encontraron hijos válidos
 
             for (let intentos = 0; intentos < maxIntentos; intentos++) {
@@ -1930,8 +1950,6 @@ function performCrossover(population, crossoverRate = 0.8, mutacionProb = 0.01, 
                 const child2Validation = validarRestriccionesCodificacionMapa(child2, restricciones);
 
                 if (validarCodigoMapa(filas, columnas, child1) && validarCodigoMapa(filas, columnas, child2)) {
-
-
                     //console.log(child1Validation);
 
                     if (child1Validation.cumpleLimites && child2Validation.cumpleLimites) {
@@ -2076,7 +2094,7 @@ if (1 === 1) {
 
         codigoMapa = seleccion.Mapa[0];
 
-        const mapaCodificado = crearMapaCodificado(nf, nc, seleccion.Mapa[0]);
+        const mapaCodificado = crearMapaCodificado(nf, nc, seleccion.Mapa[0],restricciones );
         const cosechaTotalCodificado = calcularMapa(mapaCodificado.mapaGeografia);
 
         const resultadoDiv = document.getElementById("resultadoUPH");

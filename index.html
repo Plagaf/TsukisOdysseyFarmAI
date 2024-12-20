@@ -10,14 +10,70 @@
       body {
         font-family: sans-serif;
         display: flex;
-        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
       }
       .container {
-        display: block;
+        display: flex;
         width: 100%;
-        height: 100vh;
-        flex-direction: column;
+        height: 100%;
+        flex-direction: row;
       }
+
+      .col-restricciones{
+        width: 22%;
+        max-width: 280px;
+        padding: 0px;
+        position: fixed; /* Fija la columna a la izquierda */
+      top: 0;
+      left: 0;
+      height: 100%; /* Ocupa toda la altura */
+      overflow-y: auto; /* Agrega scroll vertical si el contenido es muy largo */
+      background-color: #f0f0f0; /* Color de fondo para destacar (opcional) */
+      border-right: 1px solid #ccc; /* Borde derecho (opcional) */
+      box-sizing: border-box; /* Incluye padding y border en el cálculo del ancho */
+       z-index: 1; /* Asegurarse de que esté encima del contenido */
+    }
+
+    #coidgoMapaAleatorio{
+  overflow-wrap: break-word; /* Similar a word-wrap, para mayor compatibilidad */
+
+    }
+
+    #mejorPuntuacionAbs{
+      overflow-wrap: break-word;
+
+    }
+
+    .col-contenido {
+      width: 80%;
+      padding: 50px;
+      margin-left: 20%; /* Deja espacio para la columna fija */
+      box-sizing: border-box; /* Incluye padding en el cálculo del ancho */
+
+      /* Flexbox para contenido vertical */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .col-restricciones::-webkit-scrollbar {
+  width: 4px; /* Ancho de la barra */
+}
+
+.col-restricciones::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color del fondo de la pista */
+}
+
+.col-restricciones::-webkit-scrollbar-thumb {
+  background: #6075f9; /* Color del pulgar */
+  border-radius: 4px; /* Bordes redondeados */
+}
+
+.col-restricciones::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color del pulgar al pasar el ratón */
+}
+
+
       .first-row {
         display: flex; /* Crea una fila para la sección de input y el mapa */
       }
@@ -198,72 +254,80 @@
   </head>
   <body>
     <div class="container">
-      <h1>Restricciones</h1>
-      <div class="first-row">
-        <div class="restricciones-section">
-          <form id="restriccionesForm">
-            <fieldset>
-              <legend>Información General</legend>
-              <label for="Plantable">Plantable:</label>
-              <input type="number" id="Plantable" name="Plantable" value="66" required>
-              <label for="Cero">Cero:</label>
-              <input type="number" id="Cero" name="Cero" value="999" required >
-            </fieldset>
-            <fieldset>
-              <legend>Uv</legend>
-              <label for="GG">Giga Grow:</label>
-              <input type="number" id="GG" name="GG" value="5" required>
-              <label for="MG">Mega Grow:</label>
-              <input type="number" id="MG" name="MG" value="13" required>
-            </fieldset>
-            <fieldset>
-              <legend>Aspersores</legend>
-              <label for="LS">Line Sprikler:</label>
-              <input type="number" id="LS" name="LS" value="9" required>
-              <label for="RS">Rrotary Sprinkler:</label>
-              <input type="number" id="RS" name="RS" value="6" required>
-            </fieldset>
-            <fieldset>
-              <legend>Fertilizantes</legend>
 
-              <label for="GF">Goat Fertilizer:</label>
-              <input type="number" id="GF" name="GF" value="20" required >
-              <label for="BF">Bull Fertilizer:</label>
-              <input type="number" id="BF" name="BF" value="1" required >
-              <label for="EF">Elephant Fertilizer:</label>
-              <input type="number" id="EF" name="EF" value="1" required >
-            </fieldset>
-            <fieldset>
-              <legend>Flores</legend>
-
-              <label for="R">Flores</label>
-              <input type="number" id="R" name="R" value="1" required >
-            </fieldset>
-            <fieldset>
-              <legend>Plantas</legend>
-              <label for="C">Calabaza:</label>
-              <input type="number" id="C" name="C" value="0" required >
-              <label for="S">Sandías:</label>
-              <input type="number" id="S" name="S" value="0" required >
-              <label for="Z">Zanahorias:</label>
-              <input type="number" id="Z" name="Z" value="66" required >
-              <label for="P">Papas:</label>
-              <input type="number" id="P" name="P" value="20" required >
-              <label for="U">Uvas:</label>
-              <input type="number" id="U" name="U" value="20" required >
-              <label for="N">Nabos:</label>
-              <input type="number" id="N" name="N" value="20" required >
-              <label for="F">Fresas:</label>
-              <input type="number" id="F" name="F" value="20" required >
-              <label for="O">Cebollas:</label>
-              <input type="number" id="O" name="O" value="20" required >
-              <label for="L">Lunar:</label>
-              <input type="number" id="L" name="L" value="0" required >
-            </fieldset>
-          </form>
+      <div class="col-restricciones" >
+        <div class="first-row">
+          <div class="restricciones-section">
+            <h1>Restricciones</h1>
+            <form id="restriccionesForm">
+              <fieldset>
+                <legend>Información General</legend>
+                <label for="Plantable">Plantable:</label>
+                <input type="number" id="Plantable" name="Plantable" value="66" required>
+                <label for="Cero">Cero:</label>
+                <input type="number" id="Cero" name="Cero" value="999" required >
+              </fieldset>
+              <fieldset>
+                <legend>Uv</legend>
+                <label for="GG">Giga Grow:</label>
+                <input type="number" id="GG" name="GG" value="5" required>
+                <label for="MG">Mega Grow:</label>
+                <input type="number" id="MG" name="MG" value="13" required>
+              </fieldset>
+              <fieldset>
+                <legend>Aspersores</legend>
+                <label for="LS">Line Sprikler:</label>
+                <input type="number" id="LS" name="LS" value="9" required>
+                <label for="RS">Rrotary Sprinkler:</label>
+                <input type="number" id="RS" name="RS" value="6" required>
+              </fieldset>
+              <fieldset>
+                <legend>Fertilizantes</legend>
+  
+                <label for="GF">Goat Fertilizer:</label>
+                <input type="number" id="GF" name="GF" value="20" required >
+                <label for="BF">Bull Fertilizer:</label>
+                <input type="number" id="BF" name="BF" value="1" required >
+                <label for="EF">Elephant Fertilizer:</label>
+                <input type="number" id="EF" name="EF" value="1" required >
+              </fieldset>
+              <fieldset>
+                <legend>Flores</legend>
+  
+                <label for="R">Flores</label>
+                <input type="number" id="R" name="R" value="1" required >
+              </fieldset>
+              <fieldset>
+                <legend>Plantas</legend>
+                <label for="C">Calabaza:</label>
+                <input type="number" id="C" name="C" value="3" required >
+                <label for="S">Sandías:</label>
+                <input type="number" id="S" name="S" value="10" required >
+                <label for="Z">Zanahorias:</label>
+                <input type="number" id="Z" name="Z" value="66" required >
+                <label for="P">Papas:</label>
+                <input type="number" id="P" name="P" value="20" required >
+                <label for="U">Uvas:</label>
+                <input type="number" id="U" name="U" value="20" required >
+                <label for="N">Nabos:</label>
+                <input type="number" id="N" name="N" value="20" required >
+                <label for="F">Fresas:</label>
+                <input type="number" id="F" name="F" value="20" required >
+                <label for="O">Cebollas:</label>
+                <input type="number" id="O" name="O" value="20" required >
+                <label for="L">Lunar:</label>
+                <input type="number" id="L" name="L" value="0" required >
+              </fieldset>
+            </form>
+          </div>
         </div>
+
       </div>
-      <h1>Simulador1</h1>
+
+      <div class="col-contenido">
+
+        
+      <h1>Generador de mapas aleatorios</h1>
       <div class="first-row">
         <div class="input-section">
           <h2>Configuración del Mapa</h2>
@@ -276,17 +340,18 @@
           <label for="modificadores">Modificadores:</label>
           <input type="number" id="modificadores" value="5" >
           <button id="boton-generar">Generar Mapa</button>
-        </div>
-        <div class="map-section">
-          <h2>Mapa SVG</h2>
-          <svg id="mapa-svg"></svg>
-        </div>
-        <div class="calculation">
+
+          <hr>
           <h2>Cálculo Total</h2>
           <p>Utilidad total: <span id="utilidadTotal">0</span></p>
           <p>Cosecha por hora: <span id="cosechaUph">0</span></p>
           <p>Total cosechado: <span id="totalCosechado">0</span></p>
           <p>Código mapa: <div><span id="coidgoMapaAleatorio">0</span></div></p>
+
+        </div>
+        <div class="map-section">
+          <h2>Mapa</h2>
+          <svg id="mapa-svg"></svg>
         </div>
       </div>
       <div class="list">
@@ -297,7 +362,10 @@
         <h2>Listado de Cosecha</h2>
         <table id="listado-plantas"></table>
       </div>
-      <h2>Decodificador</h2>
+
+      <hr>
+      
+      <h1>Decodificador</h1>
       <div class="first-row">
         <div class="input-section">
           <label for="anchoMapa">Ancho del mapa:</label>
@@ -319,13 +387,7 @@
             <svg id="mapa-svg-codificado"></svg>
           </div>
         </div>
-        <div>
-          <div class="map-section" id="grafOpt">
-            <h2>grafica optimización</h2>
-            <canvas id="myChart"></canvas>
-          </div>
-        </div>
-      </div>
+      </div><h1>Algoritmo genético</h1>
       <div class="first-row">
         <div class="input-section">
           <button id="generacionbtn">Población inicial</button>
@@ -353,6 +415,10 @@
           <div id="mejorPuntuacionAbs">Mejor puntuación:</div>
           <div id="generacion">Generacion:</div>
         </div>
+        <div class="map-section" id="grafOpt">
+          <h2>grafica optimización</h2>
+          <canvas id="myChart"></canvas>
+      </div>
       </div>
       <div class="log-section">
         <h1>Población:</h1>
@@ -378,6 +444,24 @@
         <br>
       </div>
     </div>
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+      
     <script src="apoachCapas.js"></script>
   </body>
 </html>
