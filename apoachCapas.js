@@ -4,11 +4,12 @@ const PLANTA = "P";
 const AREA_EFECTO = "E";
 
 // Define el tamaño de la celda (en píxeles)
-const tamanoCelda = 20;
+const tamanoCelda = 40;
 
 
 const svg1 = d3.select("#mapa-svg");
 const svg2 = d3.select("#mapa-svg-codificado");
+const svg3 = d3.select("#mapa-svg-gui");
 let myChart;
 
 
@@ -206,39 +207,43 @@ function crearObjetoProxy(objeto) {
     });
 }
 
+//0,MGN,0,rs,0,0,s,c,z,p,u,n,l,f,c,0
 
+//0,MGN,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+//LSH,0,0,rs,mgn,GGS,0,C,Z,P,U,N,L,F,c,S
 
 const poolGGs = [
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "N", color: "#FFC0CB", formaAoE: barraN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "W", color: "#FFC0CB", formaAoE: barraW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "S", color: "#FFC0CB", formaAoE: barraS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: "uno", numCeldas: 2, orientacion: "E", color: "#FFC0CB", formaAoE: barraE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 })
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/GigaGrow.png", placeHolder: "uno", numCeldas: 2, orientacion: "N", color: "#FFC0CB", formaAoE: barraN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/GigaGrow.png", placeHolder: "uno", numCeldas: 2, orientacion: "W", color: "#FFC0CB", formaAoE: barraW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/GigaGrow.png", placeHolder: "uno", numCeldas: 2, orientacion: "S", color: "#FFC0CB", formaAoE: barraS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Giga Grow", codigo: "GG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/GigaGrow.png", placeHolder: "uno", numCeldas: 2, orientacion: "E", color: "#FFC0CB", formaAoE: barraE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 })
 ]
 
 
 const poolMGs = [
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "N", color: "#AA336A", formaAoE: posteN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "W", color: "#AA336A", formaAoE: posteW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "S", color: "#AA336A", formaAoE: posteS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "E", color: "#AA336A", formaAoE: posteE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/MegaGrow.png", placeHolder: null, numCeldas: 1, orientacion: "N", color: "#AA336A", formaAoE: posteN, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/MegaGrow.png", placeHolder: null, numCeldas: 1, orientacion: "W", color: "#AA336A", formaAoE: posteW, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/MegaGrow.png", placeHolder: null, numCeldas: 1, orientacion: "S", color: "#AA336A", formaAoE: posteS, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Mega Grow", codigo: "MG", clase: MODIFICADOR, tipo: "UV", imagen: "imgs/MegaGrow.png", placeHolder: null, numCeldas: 1, orientacion: "E", color: "#AA336A", formaAoE: posteE, efectoTiempo: 0.8, efectoCosecha: .25, costo: 3000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
 ]
 
 
 const poolLSs = [
-    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", numCeldas: 3, orientacion: "V", color: "#9F2B68", formaAoE: ladosV, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: "dos", numCeldas: 3, orientacion: "H", color: "#9F2B68", formaAoE: ladosH, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen:"imgs/LaneSprinkler.png" , placeHolder: "dos", numCeldas: 3, orientacion: "V", color: "#9F2B68", formaAoE: ladosV, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Lane Sprinkler", codigo: "LS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: "imgs/LaneSprinkler.png", placeHolder: "dos", numCeldas: 3, orientacion: "H", color: "#9F2B68", formaAoE: ladosH, efectoTiempo: 0.8, efectoCosecha: 0, costo: 8000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
 
 ]
 
 const poolRSs = [
-    new Objeto({ nombre: "Rotary Sprinkler", codigo: "RS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#800020", formaAoE: dona, efectoTiempo: 0.8, efectoCosecha: 0, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Rotary Sprinkler", codigo: "RS", clase: MODIFICADOR, tipo: "Sprinklers", imagen: "imgs/Sprinkler.png", placeHolder: null, numCeldas: 1, orientacion: "", color: "#800020", formaAoE: dona, efectoTiempo: 0.8, efectoCosecha: 0, costo: 5000, precio: 0, esConsumible: false, qtyCompra: 1, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }),
 
 ]
 
 const poolFertilizers = [
-    new Objeto({ nombre: "Goat Fertilizer", codigo: "GF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#CD7F32", formaAoE: dona, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Bull Fertilizer", codigo: "BF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: "medio", numCeldas: 4, orientacion: "", color: "#A52A2A", formaAoE: donaM, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 1500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
-    new Objeto({ nombre: "Elephant Fertilizer", codigo: "EF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: null, placeHolder: "grande", numCeldas: 9, orientacion: "", color: "#DAA06D", formaAoE: donaG, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 4500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 })
+    new Objeto({ nombre: "Goat Fertilizer", codigo: "GF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: "imgs/GoatFert.png", placeHolder: null, numCeldas: 1, orientacion: "", color: "#CD7F32", formaAoE: dona, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Bull Fertilizer", codigo: "BF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: "imgs/BullFert.png", placeHolder: "medio", numCeldas: 4, orientacion: "", color: "#A52A2A", formaAoE: donaM, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 1500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 }),
+    new Objeto({ nombre: "Elephant Fertilizer", codigo: "EF", clase: MODIFICADOR, tipo: "Fertilizer", imagen: "imgs/Elephantfertiliser.webp", placeHolder: "grande", numCeldas: 9, orientacion: "", color: "#DAA06D", formaAoE: donaG, efectoTiempo: 2 / 3, efectoCosecha: 0.5, costo: 4500, precio: 0, esConsumible: true, qtyCompra: 1, qtyVenta: 1, tiempo: 24, reduccionTiempo: 0 })
 ]
 
 //Sé que se puede crear un pool directo con todos los elementos en lugar de concatenar, pero se requiere un pool separado por modificador rotable para obtener aleatoriamente cada rotación.
@@ -247,18 +252,18 @@ const poolModificadores = poolGGs.concat(poolMGs).concat(poolLSs).concat(poolRSs
 
 
 const poolPlantas = [
-    crearObjetoProxy(new Objeto({ nombre: "Sandía", codigo: "S", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#03a572", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 300, precio: 200, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 6, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Calabaza", codigo: "C", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#FF7518", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 250, precio: 100, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Sandía", codigo: "S", clase: PLANTA, tipo: "Planta", imagen:"imgs/Watermelonseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#03a572", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 300, precio: 200, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 6, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Calabaza", codigo: "C", clase: PLANTA, tipo: "Planta", imagen: "imgs/Pumpkinseeds.webp", placeHolder: null, numCeldas: 1, orientacion: "", color: "#FF7518", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 250, precio: 100, esConsumible: true, qtyCompra: 5, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
 
-    crearObjetoProxy(new Objeto({ nombre: "Zanahoria", codigo: "Z", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#FFC000", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 20, esConsumible: false, qtyCompra: 1, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Papa", codigo: "P", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#4C3228", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 11, tiempo: 1, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Uva", codigo: "U", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#4c00b0", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 4, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 2, reduccionTiempo: 0 })),
-    crearObjetoProxy(new Objeto({ nombre: "Nabo", codigo: "N", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#c3c8ac", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 22, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Zanahoria", codigo: "Z", clase: PLANTA, tipo: "Planta", imagen:"imgs/Carrotseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#FFC000", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 20, esConsumible: false, qtyCompra: 1, qtyVenta: 1, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Papa", codigo: "P", clase: PLANTA, tipo: "Planta", imagen:"imgs/Potatoseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#4C3228", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 11, tiempo: 1, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Uva", codigo: "U", clase: PLANTA, tipo: "Planta", imagen:"imgs/Grapeseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#4c00b0", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 4, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Nabo", codigo: "N", clase: PLANTA, tipo: "Planta", imagen:"imgs/Turnipseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#c3c8ac", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 1, esConsumible: false, qtyCompra: 1, qtyVenta: 22, tiempo: 2, reduccionTiempo: 0 })),
 
-    crearObjetoProxy(new Objeto({ nombre: "Lunar", codigo: "L", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#F0EAD6", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 5, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0 })),
+    crearObjetoProxy(new Objeto({ nombre: "Lunar", codigo: "L", clase: PLANTA, tipo: "Planta", imagen:"imgs/Gloamrootseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#F0EAD6", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 5, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0 })),
 
-    crearObjetoProxy(new Objeto({ nombre: "Fresa", codigo: "F", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#e42e67", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 2, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0.5 })),
-    crearObjetoProxy(new Objeto({ nombre: "Cebolla", codigo: "O", clase: PLANTA, tipo: "Planta", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#F0EA00", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 3, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 3, reduccionTiempo: 0 }))
+    crearObjetoProxy(new Objeto({ nombre: "Fresa", codigo: "F", clase: PLANTA, tipo: "Planta", imagen:"imgs/Strawberryseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#e42e67", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 2, esConsumible: false, qtyCompra: 1, qtyVenta: 5, tiempo: 2, reduccionTiempo: 0.5 })),
+    crearObjetoProxy(new Objeto({ nombre: "Cebolla", codigo: "O", clase: PLANTA, tipo: "Planta", imagen:"imgs/Onionseeds.webp" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#F0EA00", formaAoE: dona, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 3, esConsumible: false, qtyCompra: 1, qtyVenta: 6, tiempo: 3, reduccionTiempo: 0 }))
 
 ]
 
@@ -269,7 +274,7 @@ class ObjPlaceHolder extends Objeto {
 }
 
 class Flor extends Objeto {
-    constructor(options = { nombre: "Flor", codigo: "R", clase: "R", tipo: "Flor", imagen: null, placeHolder: null, numCeldas: 1, orientacion: "", color: "#FFEBED", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }) {
+    constructor(options = { nombre: "Flor", codigo: "R", clase: "R", tipo: "Flor", imagen:"imgs/hedge.png" , placeHolder: null, numCeldas: 1, orientacion: "", color: "#FFEBED", formaAoE: null, efectoTiempo: 0, efectoCosecha: 0, costo: 0, precio: 0, esConsumible: false, qtyCompra: 0, qtyVenta: 0, tiempo: 0, reduccionTiempo: 0 }) {
         super(options);
     }
 }
@@ -466,12 +471,13 @@ function fillAoECells(mapaGeografia, objeto, fila, columna) {
                 break;
             case "Planta":
                 //mapaGeografia[filaActual][columnaActual].fresaTiempo = objeto.efectoTiempo;
-                if (mapaGeografia[filaActual][columnaActual].objeto != null) {
+                if ( objeto.codigo=="F" && mapaGeografia[filaActual][columnaActual].objeto != null) {
                     if (mapaGeografia[filaActual][columnaActual].objeto.nombre != "Fresa" && mapaGeografia[filaActual][columnaActual].objeto.tipo != "Fertilizer") {
                         mapaGeografia[filaActual][columnaActual].fresaTiempo += objeto.reduccionTiempo;
                     }
+                    mapaGeografia[filaActual][columnaActual].conFresa = true;
                 }
-                mapaGeografia[filaActual][columnaActual].conFresa = true;
+                
                 break;
             default:
                 console.warn("Tipo de modificador desconocido.");
@@ -480,6 +486,22 @@ function fillAoECells(mapaGeografia, objeto, fila, columna) {
     });
 }
 
+function resetAoECells(mapaGeografia){
+    for (let i = 0; i < mapaGeografia.length; i++) {
+        for (let j = 0; j < mapaGeografia[i].length; j++) {
+            mapaGeografia[i][j].conUV = false;
+            mapaGeografia[i][j].conFertilizante = false;
+            mapaGeografia[i][j].conAgua = false;
+            mapaGeografia[i][j].conFresa = false;
+            mapaGeografia[i][j].uvTiempo = 1;
+            mapaGeografia[i][j].uvCosecha = 0;
+            mapaGeografia[i][j].fertTiempo = 1;
+            mapaGeografia[i][j].fertCosecha = 0;
+            mapaGeografia[i][j].aguaTiempo = 1;
+            mapaGeografia[i][j].fresaTiempo = 0;
+        }
+    }
+}
 
 const genes = [
     "GGS", "GGN", "GGW", "GGE",
@@ -757,7 +779,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
         intentos > 0 &&
         (plantasColocadas != numPlantas || modificadoresColocados != numModificadores) &&
         (plantasColocadas != limitesPlantas || modificadoresColocados != limitesModificadores)
-         &&(plantasColocadas + modificadoresColocados + floresColocadas) != (filas*columnas)
+        && (plantasColocadas + modificadoresColocados + floresColocadas) != (filas * columnas)
     ) {
 
         let randomIndex = Math.floor(Math.random() * poolObjetosMapa.length);
@@ -772,7 +794,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
 
 
         limiteObjeto = limites.find((element) => element.elemento == objeto.codigo).cantidad;
-        
+
         indexObjeto = limites.findIndex((element) => element.elemento == objeto.codigo);
         colocados = limites.find((element) => element.elemento == objeto.codigo).colocados;
 
@@ -860,7 +882,7 @@ function crearMapaAleatorio(filas, columnas, numPlantas, numModificadores, restr
                 plantasColocadas++;
             } if (objeto.clase == MODIFICADOR) {
                 modificadoresColocados++;
-            }if (objeto.clase == "R") {
+            } if (objeto.clase == "R") {
                 floresColocadas++;
             }
         } else {
@@ -1029,11 +1051,11 @@ function calcularMapa(mapaGeografia) {
 
         * 100) / 100;
 
-            
+
     const listaTiempos = mapaGeografia.flatMap(fila => fila.map(celda => celda?.totalTiempo));
 
 
-    return { mapaGeografia, cosechaTotal, cosechaUph ,listaTiempos};
+    return { mapaGeografia, cosechaTotal, cosechaUph, listaTiempos };
 }
 
 
@@ -1041,104 +1063,211 @@ function calcularMapa(mapaGeografia) {
 // Función para dibujar el mapa en SVG (modificada)
 function dibujarMapaSVG(svg, mapa, filas, columnas) { // Recibe la capa de area de efecto
 
-    svg.selectAll(".area-efecto").remove();
+    // Función clave para identificar elementos de forma única
+    function keyFunction(d) {
+        return d.fila + "," + d.columna;
+    }
 
-    // Actualizar las celdas existentes o crear nuevas
+    //svg.selectAll(".area-efecto").remove();
 
-    const celdas = svg.selectAll(".celda")
-        .data(mapa.flatMap((fila, i) => fila.map((celda, j) => ({
-            fila: i,
-            columna: j,
-            planta: celda?.objeto?.clase === PLANTA,  // Verifica si es una planta
-            modificador: celda?.objeto?.clase === MODIFICADOR, // Verifica si es un modificador
-            objeto: celda?.objeto
-        }))));
-
-    let aoeModificadores = mapa.map(fila => fila.map(celda => celda.conAgua || celda.conFertilizante || celda.conUV));
-
-    // Crea los datos para las celdas de área de efecto
-    aoeModificadores = aoeModificadores.flatMap((fila, i) => fila.map((valor, j) => ({
+    const datosCeldas = mapa.flatMap((fila, i) => fila.map((celda, j) => ({
         fila: i,
         columna: j,
-        valor: valor
+        planta: celda?.objeto?.clase === PLANTA,
+        modificador: celda?.objeto?.clase === MODIFICADOR,
+        objeto: celda?.objeto
     })));
 
-    // Actualizar las celdas existentes
-    celdas
-        .attr("x", d => d.columna * tamanoCelda)
-        .attr("y", d => d.fila * tamanoCelda)
-        .attr("width", tamanoCelda)  // Asegúrate de establecer el ancho y el alto
-        .attr("height", tamanoCelda) // en las celdas existentes también
-        .style("fill", d => {
-            if (d.objeto) { // Verificar si d.objeto existe antes de acceder a sus propiedades
-                if (d.planta) {
-                    return d.objeto.color;
-                } else if (d.modificador) {
-                    return "red";
-                    //return d.objeto.color;
-                } else if (d.objeto instanceof ObjPlaceHolder) {
-                    return "darkred";
-                    //return d.objeto.color;
-                } else {
-                    return "black"; // O el color que quieras para otros objetos
-                }
-            } else {
-                return "gray"; // Color para celdas vacías
-            }
-        });
+    // Datos para imágenes (solo celdas con objeto)
+    const datosImagenes = datosCeldas.filter(d => d.objeto);
 
-    // Añadir nuevas celdas
+    // Datos para áreas de efecto
+    let aoeModificadores = mapa.map(fila => fila.map(celda => celda.conAgua || celda.conFertilizante || celda.conUV));
+    aoeModificadores = aoeModificadores.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+
+    let datosConAgua = mapa.map(fila => fila.map(celda => celda.conAgua));
+    datosConAgua = datosConAgua.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+
+    let datosConFertilizante = mapa.map(fila => fila.map(celda => celda.conFertilizante));
+    datosConFertilizante = datosConFertilizante.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+
+    let datosConUV = mapa.map(fila => fila.map(celda => celda.conUV));
+    datosConUV = datosConUV.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+
+    let datosConFresa = mapa.map(fila => fila.map(celda => celda.conFresa));
+    datosConFresa = datosConFresa.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+
+    
+    let datosConAFU = mapa.map(fila => fila.map(celda => (celda.conAgua && celda.conFertilizante && celda.conUV) && !celda.conFresa));
+    datosConAFU = datosConAFU.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+    console.log(datosConAFU);
+    
+    let datosConAFUS = mapa.map(fila => fila.map(celda => celda.conAgua && celda.conFertilizante && celda.conUV&& celda.conFresa));
+    datosConAFUS = datosConAFUS.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+    console.log(datosConAFUS);
+
+    // 1. Rectángulos (Celdas)
+    let celdas = svg.selectAll(".celda").data(datosCeldas, keyFunction);
+
     celdas.enter()
         .append("rect")
         .attr("class", "celda")
+        .merge(celdas)
         .attr("x", d => d.columna * tamanoCelda)
         .attr("y", d => d.fila * tamanoCelda)
         .attr("width", tamanoCelda)
         .attr("height", tamanoCelda)
         .style("fill", d => {
-            if (d.objeto) { // Verificar si d.objeto existe antes de acceder a sus propiedades
-                if (d.planta) {
-                    return d.objeto.color;
-                } else if (d.modificador) {
-                    return "red";
-                    //return d.objeto.color;
-                } else if (d.objeto instanceof ObjPlaceHolder) {
-                    return "darkred";
-                    //return d.objeto.color;
-                } else {
-                    return "black"; // O el color que quieras para otros objetos
-                }
+            if (d.objeto) {
+                if (d.planta) return d.objeto.color;
+                if (d.modificador) return "rgba(240, 240, 240, 0.99)";
+                if (d.objeto instanceof ObjPlaceHolder) return "rgba(230, 230, 230, 0.99)";
+                if (d.objeto instanceof Flor ) return "SlateGrey";
+                return "black";
             } else {
-                return "gray"; // Color para celdas vacías
+                return "SlateGrey";
             }
         });
 
-    // Eliminar las celdas que ya no existen
     celdas.exit().remove();
 
-    const areaEfectoCeldas = svg.selectAll(".area-efecto")
-        .data(aoeModificadores.filter(d => d.valor));
+
+    // 2. Imágenes (Celdas con objeto)
+    let imagenes = svg.selectAll(".celda-imagen").data(datosImagenes, keyFunction);
+
+    imagenes.enter()
+        .append("image")
+        .attr("class", "celda-imagen")
+        .merge(imagenes)
+        .attr("x", d => d.columna * tamanoCelda)
+        .attr("y", d => d.fila * tamanoCelda)
+        .attr("width", tamanoCelda)
+        .attr("height", tamanoCelda)
+        .attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+    imagenes.exit().remove();
+
+    
+    let conAgua = svg.selectAll(".celda-conAgua").data(datosConAgua.filter(d => d.valor), keyFunction);
+
+    conAgua.enter()
+        .append("rect")
+        .attr("class", "celda-conAgua")
+        .merge(conAgua)
+        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 1 / 6) // <-- Ajustar posición
+        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5)
+        .style("fill", "rgba(0, 238, 255, 0.99)");
+        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+    conAgua.exit().remove();
+
+    let conFertilizante = svg.selectAll(".celda-conFertilizante").data(datosConFertilizante.filter(d=>d.valor), keyFunction);
+    conFertilizante.enter()
+        .append("rect")
+        .attr("class", "celda-conFertilizante")
+        .merge(conFertilizante)
+        //.attr("x", d => d.columna * tamanoCelda)
+        //.attr("y", d => d.fila * tamanoCelda)
+        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 2 / 6) // <-- Ajustar posición
+        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5)
+        .style("fill", "rgba(255, 170, 0, 0.99)");
+
+        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+    conFertilizante.exit().remove();
+
+    let conUV = svg.selectAll(".celda-conUV").data(datosConUV.filter(d=>d.valor), keyFunction);
+    conUV.enter()
+        .append("rect")
+        .attr("class", "celda-conUV")
+        .merge(conUV)
+        //.attr("x", d => d.columna * tamanoCelda)
+        //.attr("y", d => d.fila * tamanoCelda)
+        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 3 / 6) // <-- Ajustar posición
+        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5)
+        .style("fill", "rgba(255, 0, 247,0.99)");
+
+        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+        conUV.exit().remove();
+
+        let conFresa = svg.selectAll(".celda-conFresa").data(datosConFresa.filter(d=>d.valor), keyFunction);
+        conFresa.enter()
+        .append("rect")
+        .attr("class", "celda-conFresa")
+        .merge(conFresa)
+        //.attr("x", d => d.columna * tamanoCelda)
+        //.attr("y", d => d.fila * tamanoCelda)
+        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 4 / 6) // <-- Ajustar posición
+        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5)
+        .style("fill", "rgba(255, 0, 119, 0.99)");
+
+        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+        conFresa.exit().remove();
+
+        let conAFU = svg.selectAll(".celda-conAFU").data(datosConAFU.filter(d=>d.valor), keyFunction);
+        conAFU.enter()
+        .append("rect")
+        .attr("class", "celda-conAFU")
+        .merge(conAFU)
+        //.attr("x", d => d.columna * tamanoCelda)
+        //.attr("y", d => d.fila * tamanoCelda)
+        .attr("x", d => d.columna * tamanoCelda + tamanoCelda) // <-- Ajustar posición
+        .attr("y", d => d.fila * tamanoCelda + tamanoCelda )  // <-- Ajustar posición
+        .attr("width", tamanoCelda)
+        .attr("height", tamanoCelda)
+        .style("stroke", "rgba(127, 255, 0, 0.99)")
+        .style("stroke-width", "7px");
+
+        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+        conAFU.exit().remove();
+
+        let conAFUS = svg.selectAll(".celda-conAFUS").data(datosConAFUS.filter(d=>d.valor), keyFunction);
+        conAFUS.enter()
+        .append("rect")
+        .attr("class", "celda-conAFUS")
+        .merge(conAFUS)
+        //.attr("x", d => d.columna * tamanoCelda)
+        //.attr("y", d => d.fila * tamanoCelda)
+        .attr("x", d => d.columna * tamanoCelda) // <-- Ajustar posición
+        .attr("y", d => d.fila * tamanoCelda)  // <-- Ajustar posición
+        .attr("width", tamanoCelda)
+        .attr("height", tamanoCelda)
+        .style("stroke", "rgba(255, 255, 0, 0.99)")
+        .style("stroke-width", "10px")
+        .style("fill", "rgba(255, 255, 255, 0.01)");
+
+        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+
+        conAFUS.exit().remove();
+
+
+    // 3. Áreas de Efecto
+    let areaEfectoCeldas = svg.selectAll(".area-efecto").data(aoeModificadores.filter(d => d.valor), keyFunction);
 
     areaEfectoCeldas.enter()
         .append("rect")
         .attr("class", "area-efecto")
+        .merge(areaEfectoCeldas) // <-- añadido merge aquí
         .attr("x", d => d.columna * tamanoCelda)
         .attr("y", d => d.fila * tamanoCelda)
         .attr("width", tamanoCelda)
         .attr("height", tamanoCelda)
-        .style("fill", "rgba(255, 25, 0, 0.25)");
+        .style("fill", "rgba(255, 25, 0, 0.05)")
+        .style("pointer-events", "none");
 
     areaEfectoCeldas.exit().remove();
 
-    // Dibujar los áreas de efecto de los modificadores (igual que antes)
-    /*aoeModificadores.forEach((fila, i) => {
-        fila.forEach((modificador, j) => {
-            if (modificador) {
-                dibujarAreaEfectoSVG(svg, aoeModificadores, tamanoCelda);
-            }
-        });
-    });
-*/
 
     // Calcular el centro del SVG
     const centroX = columnas * tamanoCelda / 2;
@@ -1149,6 +1278,8 @@ function dibujarMapaSVG(svg, mapa, filas, columnas) { // Recibe la capa de area 
         .attr("height", filas * tamanoCelda)
     //.attr("transform", `rotate(45, ${columnas * tamanoCelda / 2}, ${filas * tamanoCelda / 2})`);
 }
+
+
 
 
 function actualizarTablaPlantas(cosechaTotal) {
@@ -1261,16 +1392,12 @@ function generarMapaAleatorioCalcularYDibujar(filas = 10, columnas = 10, plantas
 
     // Generar el mapa aleatorio
     const mapaAleatorio = crearMapaAleatorio(filas, columnas, plantas, modificadores, restricciones);
-
-    console.log("mapaAleatorio", mapaAleatorio);
+    //console.log("Mapa Aleatorio", mapaAleatorio);
 
 
     // Calcular la cosechacapaPlantas, capaAreaEfecto, capaModCosecha, capaModTiempo, capaFertilizanteCosecha, capaUvCosecha, capaUvTiempo,capaFertilizanteTiempo,capaAspersor)
-
     const cosechaTotal = calcularMapa(mapaAleatorio.mapaGeografia);
-
-
-    console.log("cosechaTotal", cosechaTotal);
+    console.log("Mapa Aleatorio CosechaTotal", cosechaTotal);
 
     dibujarMapaSVG(svg, mapaAleatorio.mapaGeografia, filas, columnas);
 
@@ -1309,13 +1436,13 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
     //console.log(frecuencias);
 
-   // frecuencias[" "] = (frecuencias["0"] || 0) - cerosOcupados;
+    // frecuencias[" "] = (frecuencias["0"] || 0) - cerosOcupados;
 
-   /*
-   if (frecuencias["0"] < 0) {
-        frecuencias["0"] = 0;
-    }
-        */
+    /*
+    if (frecuencias["0"] < 0) {
+         frecuencias["0"] = 0;
+     }
+         */
 
     const espaciosUtilizados = Object.values(frecuencias)
         .filter((_, index) => Object.keys(frecuencias)[index] == "X") //filtrar por la clave en la posición index
@@ -1328,8 +1455,8 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
     const sumaModificadores = modificadores.reduce((sum, mod) => sum + (frecuencias[mod] || 0), 0);
 
     const totalPlantas = Object.entries(frecuencias)
-  .filter(([clave, _]) => clave !== " " && clave !== "X" && !modificadores.includes(clave))
-  .reduce((acc, [_, valor]) => acc + valor, 0);
+        .filter(([clave, _]) => clave !== " " && clave !== "X" && !modificadores.includes(clave))
+        .reduce((acc, [_, valor]) => acc + valor, 0);
 
 
     // Crear los límites a partir de las propiedades del objeto 'restricciones'
@@ -1342,7 +1469,7 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
 
 
-        //console.log(limites);
+    //console.log(limites);
 
     const cumpleLimitesIndividuales = !limites.some(limite => {
         const cantidadActual = frecuencias[limite.elemento] || 0;
@@ -1404,10 +1531,10 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
         cumpleLimitePlantable = false;
 
-        for (let index = 0; index < (totalPlantas-restricciones.Plantable); index++) {
+        for (let index = 0; index < (totalPlantas - restricciones.Plantable); index++) {
             const indiceAleatorio = Math.floor(Math.random() * codigoMapa.length);
-            if ( modificadores.indexOf(codigoMapa[indiceAleatorio]) === -1  ) {
-                codigoMapa[indiceAleatorio]= " ";
+            if (modificadores.indexOf(codigoMapa[indiceAleatorio]) === -1) {
+                codigoMapa[indiceAleatorio] = " ";
             }
         }
     }
@@ -1416,10 +1543,10 @@ function validarRestriccionesCodificacionMapa(codigoMapa, restricciones) {
 
     const cumpleLimites = cumpleLimitesIndividuales && cumpleLimitePlantable;
 
-    if(!cumpleLimites){
+    if (!cumpleLimites) {
         //console.log(cumpleLimites, codigoMapa, mapaOriginal);
     }
-    
+
 
     return {
         cumpleLimites,
@@ -1499,7 +1626,7 @@ function crearMapaCodificado(filas, columnas, codigoMapa, restricciones = new Re
     //console.log(restricciones);
 
     const mapaValidado = validarRestriccionesCodificacionMapa(codigoMapa, restricciones);
-    console.log("mapaValidado",mapaValidado);
+    console.log("mapaValidado", mapaValidado);
 
     if (!mapaValidado.cumpleLimites) {
         codigoMapa = mapaValidado.codigoMapa;
@@ -1936,9 +2063,9 @@ function performCrossover(population, crossoverRate = 0.8, mutacionProb = 0.01, 
 
     for (let i = 0; i < populationSize; i += 2) {
         if (Math.random() < crossoverRate) {
-            
+
             //const maxIntentos = 20;
-            const maxIntentos = population.length/2;
+            const maxIntentos = population.length / 2;
             let childrenFound = false; // Bandera para indicar si se encontraron hijos válidos
 
             for (let intentos = 0; intentos < maxIntentos; intentos++) {
@@ -2094,7 +2221,7 @@ if (1 === 1) {
 
         codigoMapa = seleccion.Mapa[0];
 
-        const mapaCodificado = crearMapaCodificado(nf, nc, seleccion.Mapa[0],restricciones );
+        const mapaCodificado = crearMapaCodificado(nf, nc, seleccion.Mapa[0], restricciones);
         const cosechaTotalCodificado = calcularMapa(mapaCodificado.mapaGeografia);
 
         const resultadoDiv = document.getElementById("resultadoUPH");
@@ -2122,6 +2249,151 @@ if (1 === 1) {
 
 
 }
+
+function placeElement(mapa, fila, columna, objeto) {
+
+
+    if (celdaLibre(mapa, fila, columna)) {
+        if (objeto.placeHolder != null) {
+            const coordenadas = getPlaceHolderCells(mapa, objeto, fila, columna);
+            if (!coordenadas.celdasEnRango) {
+            } else {
+                if (cabe(mapa, coordenadas.celdasPlaceHolder)) {
+                    llenarConPlaceHolders(mapa, coordenadas.celdasPlaceHolder, ObjPlaceHolder);
+
+                    mapa[fila][columna].objeto = objeto;
+
+                    //console.log(mapa,calcularMapa(mapa));
+                } else {
+                }
+            }
+        } else {
+            mapa[fila][columna].objeto = objeto;
+            //console.log(mapa,calcularMapa(mapa));
+        }
+
+    } else {
+        console.log("celda ocupada");
+    }
+
+    mapa.forEach((fila, indiceFila) => {
+        fila.forEach((celda, indiceColumna) => {
+            if (celda.objeto?.formaAoE) {
+                //console.log("llenando AoE de:", objeto, objeto.formaAoE);
+                fillAoECells(mapa, celda.objeto, indiceFila, indiceColumna);
+
+            };
+        });
+    });
+}
+
+function deleteElement(mapa, fila, columna) {
+
+    let objeto = null;
+
+    if (celdaLibre(mapa, fila, columna)) {
+        /*
+        if (objeto.placeHolder != null) {
+            const coordenadas = getPlaceHolderCells(mapa, objeto, fila, columna);
+            if (!coordenadas.celdasEnRango) {
+            } else {
+                if (cabe(mapa, coordenadas.celdasPlaceHolder)) {
+                    llenarConPlaceHolders(mapa, coordenadas.celdasPlaceHolder, ObjPlaceHolder);
+
+                    mapa[fila][columna].objeto = objeto;
+
+                    //console.log(mapa,calcularMapa(mapa));
+                } else {
+                }
+            }
+        } else {
+            mapa[fila][columna].objeto = objeto;
+            //console.log(mapa,calcularMapa(mapa));
+        }
+            */
+
+    } else {
+        console.log("celda ocupada, eliminando");
+        objeto = mapa[fila][columna].objeto
+
+        mapa[fila][columna] = new Celda(null, 0, false, false, false, false, 1, 0, 1, 0, 1, 0, "");
+        resetAoECells(mapa);
+        //console.log(mapa,calcularMapa(mapa));
+
+    }
+
+    
+    mapa.forEach((filaMapa, indiceFila) => {
+        filaMapa.forEach((celda, indiceColumna) => {
+            if (celda.objeto?.formaAoE) {
+                console.log("llenando AoE de:", celda, objeto?.formaAoE);
+                fillAoECells(mapa, celda.objeto, indiceFila, indiceColumna);
+
+            };
+        });
+    });
+    
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const codigoObjeto = document.getElementById('codigoObjeto');
+    const filas = document.getElementById('largoMapaGUI').value;
+    const columnas = document.getElementById('anchoMapaGUI').value;
+    let selectedElement = getObjetoPorCodigo(codigoObjeto.value.toUpperCase());
+    let mapaGeografia = [];
+
+
+
+    //(objeto, cosecha, conUV, conFertilizante, conAgua, conFresa,7 uvTiempo, uvCosecha, fertTiempo, fertCosecha, aguaTiempo,12 fresaTiempo, colorAdicional)
+
+    for (let i = 0; i < filas; i++) {
+        mapaGeografia[i] = []; // Inicializar cada fila del mapa
+        for (let j = 0; j < columnas; j++) {
+            mapaGeografia[i][j] = new Celda(null, 0, false, false, false, false, 1, 0, 1, 0, 1, 0, "")
+        }
+    }
+
+    dibujarMapaSVG(svg3, mapaGeografia, filas, columnas);
+
+    const celdasSVG = svg3.selectAll(".celda");
+
+    celdasSVG.on("click", function (event, d) {
+        const fila = Math.floor(d / columnas); // Calcula la fila
+        const columna = d % columnas;          // Calcula la columna
+
+
+        const codigoSeleccionado = codigoObjeto.value.toUpperCase();
+        
+        if(codigoSeleccionado=="ELIMINAR"){
+            deleteElement(mapaGeografia, fila, columna);
+        }else{
+            const selectedElement = getObjetoPorCodigo(codigoSeleccionado);
+            placeElement(mapaGeografia, fila, columna, selectedElement);
+        }
+        
+        dibujarMapaSVG(svg3, mapaGeografia, filas, columnas); // Redibujar el mapa después del cambio
+
+
+        //d3.select(this).attr("fill", selectedElement ? selectedElement.color : "white"); // Ejemplo
+
+        const mapaCalculado = calcularMapa(mapaGeografia);
+
+
+        const resultadoDivGUI = document.getElementById("resultadoUPHGUI");
+        resultadoDivGUI.innerHTML = "UPH: " + JSON.stringify(mapaCalculado.cosechaUph);
+
+
+        const mapaCodificado = mapaGeografia.map(fila => fila.map(celda => celda.objeto?.codigoLargo ?? " ")).flat();
+
+        const codigoGUI = document.getElementById("codigoGUI");
+        codigoGUI.innerHTML = JSON.stringify(mapaCodificado);
+
+        console.log("Mapa GUI",mapaGeografia, mapaCalculado);
+
+    });
+
+});
 
 
 
