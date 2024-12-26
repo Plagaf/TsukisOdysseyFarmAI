@@ -4,7 +4,7 @@ const PLANTA = "P";
 const AREA_EFECTO = "E";
 
 // Define el tamaño de la celda (en píxeles)
-const tamanoCelda = 40;
+const tamanoCelda = 50;
 
 
 const svg1 = d3.select("#mapa-svg");
@@ -472,8 +472,11 @@ function fillAoECells(mapaGeografia, objeto, fila, columna) {
             case "Planta":
                 //mapaGeografia[filaActual][columnaActual].fresaTiempo = objeto.efectoTiempo;
                 if ( objeto.codigo=="F" && mapaGeografia[filaActual][columnaActual].objeto != null) {
-                    if (mapaGeografia[filaActual][columnaActual].objeto.nombre != "Fresa" && mapaGeografia[filaActual][columnaActual].objeto.tipo != "Fertilizer") {
-                        mapaGeografia[filaActual][columnaActual].fresaTiempo += objeto.reduccionTiempo;
+                    if (
+                        mapaGeografia[filaActual][columnaActual].objeto.nombre != "Fresa" && 
+                        mapaGeografia[filaActual][columnaActual].objeto.tipo != "Fertilizer"
+                    ) {
+                        //mapaGeografia[filaActual][columnaActual].fresaTiempo += objeto.reduccionTiempo;
                     }
                     mapaGeografia[filaActual][columnaActual].conFresa = true;
                 }
@@ -619,6 +622,27 @@ function getCebollasExtras(mapa, fila, columna) {
     });
 
     return papasExtra;
+
+}
+
+function getFresaTiempo(mapa, fila, columna) {
+
+    const posicionesVecinas = getPosicionesVecinas(mapa, fila, columna);
+    let fresasContiguas = 0;
+
+    posicionesVecinas.forEach(([filaActual, columnaActual]) => {
+        //console.log(mapa[filaActual][columnaActual].objeto);
+        if (
+            mapa[filaActual][columnaActual].objeto &&
+            mapa[filaActual][columnaActual].objeto.codigo === "F"
+        ) {
+            fresasContiguas++;
+        }
+    });
+
+    console.log("fresasContiguas", fresasContiguas);
+
+    return fresasContiguas;
 
 }
 
@@ -1017,15 +1041,23 @@ function calcularMapa(mapaGeografia) {
                 if (!mapaGeografia[i][j].objeto.esConsumible) {
                     mapaGeografia[i][j].modCosecha = 1 + (mapaGeografia[i][j].fertCosecha + mapaGeografia[i][j].uvCosecha);
                     mapaGeografia[i][j].modTiempo = (mapaGeografia[i][j].aguaTiempo);
+                    if(mapaGeografia[i][j].objeto.codigo != "F") {
+                        mapaGeografia[i][j].fresaTiempo = getFresaTiempo(mapaGeografia, i, j);
+                    }
                 } else if (mapaGeografia[i][j].objeto.esConsumible) {
                     mapaGeografia[i][j].modTiempo = (mapaGeografia[i][j].fertTiempo) * (mapaGeografia[i][j].uvTiempo) * (mapaGeografia[i][j].aguaTiempo);
+                    mapaGeografia[i][j].fresaTiempo = getFresaTiempo(mapaGeografia, i, j);
+                    console.log("mapaGeografia[i][j].fresaTiempo",mapaGeografia[i][j].fresaTiempo);
                 };
 
                 if (mapaGeografia[i][j].objeto.codigo === "O" || mapaGeografia[i][j].objeto.codigo === "o") {
                     mapaGeografia[i][j].cebollasExtra = getCebollasExtras(mapaGeografia, i, j);
                 };
 
-                mapaGeografia[i][j].adicionalPorFresa = (mapaGeografia[i][j].fresaTiempo ?? 0) / mapaGeografia[i][j].objeto.tiempo
+
+               // mapaGeografia[i][j].adicionalPorFresa = ((mapaGeografia[i][j].fresaTiempo ?? 0)*.5) / mapaGeografia[i][j].objeto.tiempo
+                
+                mapaGeografia[i][j].adicionalPorFresa = ((mapaGeografia[i][j].fresaTiempo ?? 0)/4)
 
                 mapaGeografia[i][j].cosecha = mapaGeografia[i][j].objeto.qtyVenta;
                 mapaGeografia[i][j].tiempo = mapaGeografia[i][j].objeto.tiempo;
@@ -1073,200 +1105,146 @@ function dibujarMapaSVG(svg, mapa, filas, columnas) { // Recibe la capa de area 
     const datosCeldas = mapa.flatMap((fila, i) => fila.map((celda, j) => ({
         fila: i,
         columna: j,
-        planta: celda?.objeto?.clase === PLANTA,
-        modificador: celda?.objeto?.clase === MODIFICADOR,
-        objeto: celda?.objeto
+        celda: celda
     })));
 
-    // Datos para imágenes (solo celdas con objeto)
-    const datosImagenes = datosCeldas.filter(d => d.objeto);
 
-    // Datos para áreas de efecto
-    let aoeModificadores = mapa.map(fila => fila.map(celda => celda.conAgua || celda.conFertilizante || celda.conUV));
-    aoeModificadores = aoeModificadores.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
+    // Agrupa todos los elementos visuales dentro de un grupo 'g' por celda
+    let celdasSVG = svg.selectAll("g.celda").data(datosCeldas, keyFunction);
+    let celdasEnter = celdasSVG.enter().append("g").attr("class", "celda");
 
-    let datosConAgua = mapa.map(fila => fila.map(celda => celda.conAgua));
-    datosConAgua = datosConAgua.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
 
-    let datosConFertilizante = mapa.map(fila => fila.map(celda => celda.conFertilizante));
-    datosConFertilizante = datosConFertilizante.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
-
-    let datosConUV = mapa.map(fila => fila.map(celda => celda.conUV));
-    datosConUV = datosConUV.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
-
-    let datosConFresa = mapa.map(fila => fila.map(celda => celda.conFresa));
-    datosConFresa = datosConFresa.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
-
-    
-    let datosConAFU = mapa.map(fila => fila.map(celda => (celda.conAgua && celda.conFertilizante && celda.conUV) && !celda.conFresa));
-    datosConAFU = datosConAFU.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
-    console.log(datosConAFU);
-    
-    let datosConAFUS = mapa.map(fila => fila.map(celda => celda.conAgua && celda.conFertilizante && celda.conUV&& celda.conFresa));
-    datosConAFUS = datosConAFUS.flatMap((fila, i) => fila.map((valor, j) => ({ fila: i, columna: j, valor })));
-    console.log(datosConAFUS);
-
-    // 1. Rectángulos (Celdas)
-    let celdas = svg.selectAll(".celda").data(datosCeldas, keyFunction);
-
-    celdas.enter()
-        .append("rect")
-        .attr("class", "celda")
-        .merge(celdas)
-        .attr("x", d => d.columna * tamanoCelda)
-        .attr("y", d => d.fila * tamanoCelda)
+    // 1. Rectángulos de fondo (siempre presentes)
+    celdasEnter.append("rect")
+        .attr("class", "celda-fondo")  // Nueva clase
         .attr("width", tamanoCelda)
         .attr("height", tamanoCelda)
-        .style("fill", d => {
-            if (d.objeto) {
-                if (d.planta) return d.objeto.color;
-                if (d.modificador) return "rgba(240, 240, 240, 0.99)";
-                if (d.objeto instanceof ObjPlaceHolder) return "rgba(230, 230, 230, 0.99)";
-                if (d.objeto instanceof Flor ) return "SlateGrey";
-                return "black";
-            } else {
-                return "SlateGrey";
-            }
-        });
+        .style("fill", "SlateGrey"); // Color de fondo por defecto
 
-    celdas.exit().remove();
-
-
-    // 2. Imágenes (Celdas con objeto)
-    let imagenes = svg.selectAll(".celda-imagen").data(datosImagenes, keyFunction);
-
-    imagenes.enter()
-        .append("image")
+    // 2. Imágenes (solo si hay objeto)
+    celdasEnter.append("image")
         .attr("class", "celda-imagen")
-        .merge(imagenes)
-        .attr("x", d => d.columna * tamanoCelda)
-        .attr("y", d => d.fila * tamanoCelda)
         .attr("width", tamanoCelda)
-        .attr("height", tamanoCelda)
-        .attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
+        .attr("height", tamanoCelda);
 
-    imagenes.exit().remove();
+
+    // 3. Rectángulos de Efecto (Agua, Fertilizante, UV, etc.)
+        celdasEnter.append("rect")
+        .attr("class", "celda-conAgua")
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5);
+        
+    celdasEnter.append("rect")
+        .attr("class", "celda-conFertilizante")
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5);
+
+    celdasEnter.append("rect")
+        .attr("class", "celda-conUV")
+        .attr("width", tamanoCelda/5)
+        .attr("height", tamanoCelda/5);
+
+    celdasEnter.append("rect")
+    .attr("class", "celda-conFresa")
+    .attr("width", tamanoCelda/5)
+    .attr("height", tamanoCelda/5);
+
+    celdasEnter.append("rect")
+    .attr("class", "celda-conAFU")
+    .attr("width", tamanoCelda)
+    .attr("height", tamanoCelda)
+
+
+    celdasEnter.append("rect")
+    .attr("class", "celda-conAFUS")
+    .attr("width", tamanoCelda)
+    .attr("height", tamanoCelda)
+
+    // 4. Áreas de Efecto
+    
+    celdasEnter.append("rect")
+        .attr("class", "area-efecto")
+        .attr("width", tamanoCelda)
+        .attr("height", tamanoCelda);
+        
+
+        // Merge (actualizar elementos existentes)
+    let celdasMerge = celdasEnter.merge(celdasSVG);
+
+    celdasMerge.attr("transform", d => `translate(${d.columna * tamanoCelda},${d.fila * tamanoCelda})`);
+
+
+    celdasMerge.select(".celda-fondo")
+    .style("fill", d => {
+        if (d.celda?.objeto) {
+            if (d.celda.objeto.clase === PLANTA) return d.celda.objeto.color;
+            if (d.celda.objeto.clase === MODIFICADOR) return "rgba(222, 222, 222, 0.99)";
+            if (d.celda.objeto instanceof ObjPlaceHolder) return "rgba(230, 230, 230, 0.99)";
+            if (d.celda.objeto instanceof Flor ) return "SlateGrey";
+            return "black";
+            
+        } else {
+            return "SlateGrey";
+        }
+    })
+    .style("stroke", "rgb(150, 150, 150)")
+    .style("stroke-width", "1px");
+
+    celdasMerge.select(".celda-imagen")
+        .attr("xlink:href", d => d.celda?.objeto?.imagen || null) // Ocultar si no hay imagen
+        .style("display", d => d.celda?.objeto?.imagen ? null : "none"); // Ocultar si no hay imagen
+        
+    
+    
+    
+    celdasMerge.select(".celda-conUV")
+    .attr("x", tamanoCelda * 3 / 6)
+    .attr("y", tamanoCelda * 3.75 / 6)
+    .style("fill", d => d.celda?.conUV ? "rgba(255, 0, 251, 0.99)" : "none");
+
+    celdasMerge.select(".celda-conFertilizante")
+    .attr("x", tamanoCelda * 2 / 6)
+    .attr("y", tamanoCelda * 3.75 / 6)
+    .style("fill", d => d.celda?.conFertilizante ? "rgba(88, 57, 39, 0.99)" : "none");
+
+    celdasMerge.select(".celda-conAgua")
+    .attr("x", tamanoCelda * 1 / 6)
+    .attr("y", tamanoCelda * 3.75 / 6)
+    .style("fill", d => d.celda?.conAgua ? "rgba(0, 255, 255, 0.99)" : "none"); 
+
+    celdasMerge.select(".celda-conFresa")
+    .attr("x", tamanoCelda * 4 / 6)
+    .attr("y", tamanoCelda * 3.75 / 6)
+    .style("fill", d => d.celda?.conFresa ? "rgba(175, 0, 0, 0.99)" : "none");
+
+celdasMerge.select(".area-efecto")
+    .style("display", d => (d.celda?.conAgua || d.celda?.conFertilizante || d.celda?.conUV || d.celda.conFresa) ? null : "none")
+    .style("fill", "rgba(255, 25, 0, 0.05)");
+
+
+
+
+
+
+    celdasMerge.select(".celda-conAFUS")
+    //.attr("xlink:href", d => d.celda?.objeto?.imagen || null) // Ocultar si no hay imagen
+    .style("display", d => (d.celda?.conAgua && d.celda?.conFertilizante && d.celda?.conUV) && !d.celda.conFresa ? null : "none")
+    .style("stroke", "rgba(255, 255, 0, 0.99)")
+    .style("stroke-width", "10px")
+    .style("fill", "none");
+    
+    celdasMerge.select(".celda-conAFU")
+    //.attr("xlink:href", d => d.celda?.objeto?.imagen || null) // Ocultar si no hay imagen
+    .style("display", d => (d.celda?.conAgua && d.celda?.conFertilizante && d.celda?.conUV) ? null : "none")
+    .style("stroke", "rgba(127, 255, 0, 0.99)")
+    .style("stroke-width", "7px")
+    .style("fill", "none");
 
     
-    let conAgua = svg.selectAll(".celda-conAgua").data(datosConAgua.filter(d => d.valor), keyFunction);
-
-    conAgua.enter()
-        .append("rect")
-        .attr("class", "celda-conAgua")
-        .merge(conAgua)
-        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 1 / 6) // <-- Ajustar posición
-        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
-        .attr("width", tamanoCelda/5)
-        .attr("height", tamanoCelda/5)
-        .style("fill", "rgba(0, 238, 255, 0.99)");
-        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
-
-    conAgua.exit().remove();
-
-    let conFertilizante = svg.selectAll(".celda-conFertilizante").data(datosConFertilizante.filter(d=>d.valor), keyFunction);
-    conFertilizante.enter()
-        .append("rect")
-        .attr("class", "celda-conFertilizante")
-        .merge(conFertilizante)
-        //.attr("x", d => d.columna * tamanoCelda)
-        //.attr("y", d => d.fila * tamanoCelda)
-        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 2 / 6) // <-- Ajustar posición
-        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
-        .attr("width", tamanoCelda/5)
-        .attr("height", tamanoCelda/5)
-        .style("fill", "rgba(255, 170, 0, 0.99)");
-
-        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
-
-    conFertilizante.exit().remove();
-
-    let conUV = svg.selectAll(".celda-conUV").data(datosConUV.filter(d=>d.valor), keyFunction);
-    conUV.enter()
-        .append("rect")
-        .attr("class", "celda-conUV")
-        .merge(conUV)
-        //.attr("x", d => d.columna * tamanoCelda)
-        //.attr("y", d => d.fila * tamanoCelda)
-        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 3 / 6) // <-- Ajustar posición
-        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
-        .attr("width", tamanoCelda/5)
-        .attr("height", tamanoCelda/5)
-        .style("fill", "rgba(255, 0, 247,0.99)");
-
-        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
-
-        conUV.exit().remove();
-
-        let conFresa = svg.selectAll(".celda-conFresa").data(datosConFresa.filter(d=>d.valor), keyFunction);
-        conFresa.enter()
-        .append("rect")
-        .attr("class", "celda-conFresa")
-        .merge(conFresa)
-        //.attr("x", d => d.columna * tamanoCelda)
-        //.attr("y", d => d.fila * tamanoCelda)
-        .attr("x", d => d.columna * tamanoCelda + tamanoCelda * 4 / 6) // <-- Ajustar posición
-        .attr("y", d => d.fila * tamanoCelda + tamanoCelda * 3.75 / 6)  // <-- Ajustar posición
-        .attr("width", tamanoCelda/5)
-        .attr("height", tamanoCelda/5)
-        .style("fill", "rgba(255, 0, 119, 0.99)");
-
-        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
-
-        conFresa.exit().remove();
-
-        let conAFU = svg.selectAll(".celda-conAFU").data(datosConAFU.filter(d=>d.valor), keyFunction);
-        conAFU.enter()
-        .append("rect")
-        .attr("class", "celda-conAFU")
-        .merge(conAFU)
-        //.attr("x", d => d.columna * tamanoCelda)
-        //.attr("y", d => d.fila * tamanoCelda)
-        .attr("x", d => d.columna * tamanoCelda + tamanoCelda) // <-- Ajustar posición
-        .attr("y", d => d.fila * tamanoCelda + tamanoCelda )  // <-- Ajustar posición
-        .attr("width", tamanoCelda)
-        .attr("height", tamanoCelda)
-        .style("stroke", "rgba(127, 255, 0, 0.99)")
-        .style("stroke-width", "7px");
-
-        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
-
-        conAFU.exit().remove();
-
-        let conAFUS = svg.selectAll(".celda-conAFUS").data(datosConAFUS.filter(d=>d.valor), keyFunction);
-        conAFUS.enter()
-        .append("rect")
-        .attr("class", "celda-conAFUS")
-        .merge(conAFUS)
-        //.attr("x", d => d.columna * tamanoCelda)
-        //.attr("y", d => d.fila * tamanoCelda)
-        .attr("x", d => d.columna * tamanoCelda) // <-- Ajustar posición
-        .attr("y", d => d.fila * tamanoCelda)  // <-- Ajustar posición
-        .attr("width", tamanoCelda)
-        .attr("height", tamanoCelda)
-        .style("stroke", "rgba(255, 255, 0, 0.99)")
-        .style("stroke-width", "10px")
-        .style("fill", "rgba(255, 255, 255, 0.01)");
-
-        //.attr("xlink:href", d => d.objeto.imagen); // No necesitas el ternario aquí ya que datosImagenes está filtrado
-
-        conAFUS.exit().remove();
+    
 
 
-    // 3. Áreas de Efecto
-    let areaEfectoCeldas = svg.selectAll(".area-efecto").data(aoeModificadores.filter(d => d.valor), keyFunction);
-
-    areaEfectoCeldas.enter()
-        .append("rect")
-        .attr("class", "area-efecto")
-        .merge(areaEfectoCeldas) // <-- añadido merge aquí
-        .attr("x", d => d.columna * tamanoCelda)
-        .attr("y", d => d.fila * tamanoCelda)
-        .attr("width", tamanoCelda)
-        .attr("height", tamanoCelda)
-        .style("fill", "rgba(255, 25, 0, 0.05)")
-        .style("pointer-events", "none");
-
-    areaEfectoCeldas.exit().remove();
+        celdasMerge.exit().remove();
 
 
     // Calcular el centro del SVG
@@ -1909,32 +1887,6 @@ botonCalcularCodificado.addEventListener("click", function () {
 });
 
 
-
-const botonResetGA = document.getElementById("resetGA");
-botonResetGA.addEventListener("click", function () {
-    let mejoresPuntuaciones = [];
-    let seleccion = [];
-    let poblacionMapa = [];
-    let mejorPuntuacionAbs = [];
-    let resultado = [];
-
-    if (myChart) {
-        myChart.destroy();
-    }
-
-    mostrarPoblacionEnTextBoxes(poblacionMapa);
-    document.getElementById("seleccion").innerHTML = JSON.stringify(seleccion);
-    document.getElementById("mejorPuntuacionAbs").innerHTML = "";
-    document.getElementById("mejorPuntuacionAbs").innerHTML = JSON.stringify(mejorPuntuacionAbs);
-    document.getElementById("poblacion").innerHTML = "";
-
-    createTableMejoresResultados(mejoresPuntuaciones, "mejoresPuntuaciones");
-
-
-
-
-});
-
 function updateFitPlot(data) {
 
     if (myChart) {
@@ -2356,14 +2308,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dibujarMapaSVG(svg3, mapaGeografia, filas, columnas);
 
-    const celdasSVG = svg3.selectAll(".celda");
+    const celdasSVG = svg3.selectAll("g.celda");
 
     celdasSVG.on("click", function (event, d) {
         const fila = Math.floor(d / columnas); // Calcula la fila
         const columna = d % columnas;          // Calcula la columna
-
-
         const codigoSeleccionado = codigoObjeto.value.toUpperCase();
+        
+        console.log("g.celda",fila,columna,codigoSeleccionado);
         
         if(codigoSeleccionado=="ELIMINAR"){
             deleteElement(mapaGeografia, fila, columna);
@@ -2372,13 +2324,14 @@ document.addEventListener('DOMContentLoaded', () => {
             placeElement(mapaGeografia, fila, columna, selectedElement);
         }
         
-        dibujarMapaSVG(svg3, mapaGeografia, filas, columnas); // Redibujar el mapa después del cambio
+        
 
 
         //d3.select(this).attr("fill", selectedElement ? selectedElement.color : "white"); // Ejemplo
 
         const mapaCalculado = calcularMapa(mapaGeografia);
 
+        dibujarMapaSVG(svg3, mapaGeografia, filas, columnas); // Redibujar el mapa después del cambio
 
         const resultadoDivGUI = document.getElementById("resultadoUPHGUI");
         resultadoDivGUI.innerHTML = "UPH: " + JSON.stringify(mapaCalculado.cosechaUph);
@@ -2392,6 +2345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Mapa GUI",mapaGeografia, mapaCalculado);
 
     });
+
 
 });
 

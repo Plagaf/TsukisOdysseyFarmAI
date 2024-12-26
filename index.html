@@ -400,13 +400,13 @@
       <div class="first-row">
         <div class="input-section">
           <label for="anchoMapa">Ancho del mapa:</label>
-          <input type="number" id="anchoMapa" value="4" >
+          <input type="number" id="anchoMapa" value="9" >
           <br>
           <label for="largoMapa">Largo del mapa:</label>
-          <input type="number" id="largoMapa" value="4" >
+          <input type="number" id="largoMapa" value="9" >
           <br>
           <label for="codigoMapa">Código del mapa:</label>
-          <input type="text" id="codigoMapa" placeholder="Ingresa el código del mapa" value="0,0,0,o,o,0,0,0,0">
+          <input type="text" id="codigoMapa" placeholder="Ingresa el código del mapa" value="U,U,MGS,F,Z,P,U,U,U,U,GF,S,F,Z,RS,S,GF,U,U,RS,S,F,S,F,Z,F,Z,U,F,C,GF,S,F,Z,F,Z,U,GF,F,F,C,RS,S,F,Z,N,Z,S,F,Z,F,U,GF,U,U,RS,F,F,GF,Z,Z,U,U,MGE,S,S,C,F,S,F,RS,U,U,GF,F,F,RS,Z,Z,Z,U">
           <br>
           <button id="calcularUPH">Calcular UPH</button>
           <br>
@@ -422,8 +422,10 @@
       <h1>Algoritmo genético</h1>
       <div class="first-row">
         <div class="input-section">
-          <button id="generacionbtn">Población inicial</button>
-          <button id="resetGA">Reset</button>
+          <label for="nf">Filas:</label>
+          <input type="number" id="nf" value="4" >
+          <label for="nc">Columnas:</label>
+          <input type="number" id="nc" value="4" >
           <label for="nPoblacion">Población:</label>
           <input type="number" id="nPoblacion" value="10" >
           <label for="tamSeleccion">Tamaño selección:</label>
@@ -432,10 +434,11 @@
           <input type="number" id="coRate" value="80" >
           <label for="mutacionProb">Mutación rate (%):</label>
           <input type="number" id="mutacionProb" value=".1" >
-          <label for="nf">Filas:</label>
-          <input type="number" id="nf" value="4" >
-          <label for="nc">Columnas:</label>
-          <input type="number" id="nc" value="4" >
+          <br>
+          <button id="generacionbtn">Población inicial</button>
+          <br>
+          <hr>
+
           <button id="evolucionbtn">Evolucionar</button>
           <br>
           <br>
@@ -486,10 +489,10 @@
     <div class="first-row">
       <div class="input-section">
         <label for="anchoMapa">Ancho del mapa:</label>
-        <input type="number" id="anchoMapaGUI" value="4" >
+        <input type="number" id="anchoMapaGUI" value="11" >
         <br>
         <label for="largoMapa">Largo del mapa:</label>
-        <input type="number" id="largoMapaGUI" value="4" >
+        <input type="number" id="largoMapaGUI" value="11" >
         <br>
         <label for="codigoGUI">Código del mapa:</label>
         <input type="text" id="codigoGUI">
