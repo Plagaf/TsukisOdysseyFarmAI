@@ -184,6 +184,8 @@
         padding: 20px;
         border: 1px solid #ccc;
         margin: 10px;
+        max-height: 500px;
+        overflow-y: scroll;
       }
       .calculation {
         width: 20%;
@@ -291,23 +293,32 @@
               <fieldset>
                 <legend>Información General</legend>
                 <label for="Plantable">Plantable:</label>
-                <input type="number" id="Plantable" name="Plantable" value="66" required>
-                <label for="Cero">Cero:</label>
-                <input type="number" id="Cero" name="Cero" value="999" required >
+                <input type="number" id="Plantable" name="Plantable" value="68" required>
+              </fieldset>
+              <fieldset>
+                <legend>Tréboles</legend>
+                <label for="trebol4">4 hojas:</label>
+                <input type="number" id="trebol4" name="trebol4" value="5" required>
+                <label for="trebol8">8 hojas:</label>
+                <input type="number" id="trebol8" name="trebol8" value="0" required>
+                <label for="trebol16">16 hojas:</label>
+                <input type="number" id="trebol16" name="trebol16" value="0" required>
+                <label for="strangeRate">Strange Rate</label>
+                <input type="number" id="strangeRate" name="strangeRate" value="0" required>
               </fieldset>
               <fieldset>
                 <legend>Uv</legend>
                 <label for="GG">Giga Grow:</label>
-                <input type="number" id="GG" name="GG" value="5" required>
+                <input type="number" id="GG" name="GG" value="7" required>
                 <label for="MG">Mega Grow:</label>
                 <input type="number" id="MG" name="MG" value="13" required>
               </fieldset>
               <fieldset>
                 <legend>Aspersores</legend>
                 <label for="LS">Line Sprikler:</label>
-                <input type="number" id="LS" name="LS" value="9" required>
+                <input type="number" id="LS" name="LS" value="11" required>
                 <label for="RS">Rrotary Sprinkler:</label>
-                <input type="number" id="RS" name="RS" value="6" required>
+                <input type="number" id="RS" name="RS" value="7" required>
               </fieldset>
               <fieldset>
                 <legend>Fertilizantes</legend>
@@ -320,19 +331,13 @@
                 <input type="number" id="EF" name="EF" value="1" required >
               </fieldset>
               <fieldset>
-                <legend>Flores</legend>
-  
-                <label for="R">Flores</label>
-                <input type="number" id="R" name="R" value="1" required >
-              </fieldset>
-              <fieldset>
                 <legend>Plantas</legend>
                 <label for="C">Calabaza:</label>
-                <input type="number" id="C" name="C" value="3" required >
+                <input type="number" id="C" name="C" value="0" required >
                 <label for="S">Sandías:</label>
-                <input type="number" id="S" name="S" value="10" required >
+                <input type="number" id="S" name="S" value="0" required >
                 <label for="Z">Zanahorias:</label>
-                <input type="number" id="Z" name="Z" value="66" required >
+                <input type="number" id="Z" name="Z" value="20" required >
                 <label for="P">Papas:</label>
                 <input type="number" id="P" name="P" value="20" required >
                 <label for="U">Uvas:</label>
@@ -359,10 +364,18 @@
       <div class="first-row">
         <div class="input-section">
           <h2>Configuración del Mapa</h2>
+
+          <input type="radio" id="usarGeografia" name="tipo_mapa" value="Real">
+<label for="usarGeografia">Real</label><br>
+<input type="radio" id="usarTeorico" name="tipo_mapa" value="Teorico">
+<label for="usarTeorico">Teorico</label><br>
+
+
+
           <label for="filas">Filas:</label>
-          <input type="number" id="filas" value="4" >
+          <input type="number" id="filas" value="12" >
           <label for="columnas">Columnas:</label>
-          <input type="number" id="columnas" value="4" >
+          <input type="number" id="columnas" value="12" >
           <label for="plantas">Plantas:</label>
           <input type="number" id="plantas" value="5" >
           <label for="modificadores">Modificadores:</label>
@@ -377,20 +390,26 @@
           <p>Código mapa: <div><span id="coidgoMapaAleatorio">0</span></div></p>
 
         </div>
+
         <div class="map-section">
           <h2>Mapa</h2>
           <svg id="mapa-svg"></svg>
         </div>
+
         <div>
         <div class="list">
-          <h2>Listado Modificadores</h2>
-          <table id="listado-modificadores"></table>
+          <h2>Detalle</h2>
+          <table id="listado-detalle"></table>
         </div>
+        </div>
+
+        <div>
         <div class="list">
           <h2>Listado de Cosecha</h2>
-          <table id="listado-plantas"></table>
+          <table id="listado-resumen"></table>
         </div>
       </div>
+      
     </div>
       
 
@@ -400,13 +419,13 @@
       <div class="first-row">
         <div class="input-section">
           <label for="anchoMapa">Ancho del mapa:</label>
-          <input type="number" id="anchoMapa" value="9" >
+          <input type="number" id="anchoMapa" value="4" >
           <br>
           <label for="largoMapa">Largo del mapa:</label>
-          <input type="number" id="largoMapa" value="9" >
+          <input type="number" id="largoMapa" value="4" >
           <br>
           <label for="codigoMapa">Código del mapa:</label>
-          <input type="text" id="codigoMapa" placeholder="Ingresa el código del mapa" value="U,U,MGS,F,Z,P,U,U,U,U,GF,S,F,Z,RS,S,GF,U,U,RS,S,F,S,F,Z,F,Z,U,F,C,GF,S,F,Z,F,Z,U,GF,F,F,C,RS,S,F,Z,N,Z,S,F,Z,F,U,GF,U,U,RS,F,F,GF,Z,Z,U,U,MGE,S,S,C,F,S,F,RS,U,U,GF,F,F,RS,Z,Z,Z,U">
+          <input type="text" id="codigoMapa" placeholder="Ingresa el código del mapa" value="MGS,c,GF,C,C,C,LSV,C,C,MGN,X,MGE,GF,C,X,C">
           <br>
           <button id="calcularUPH">Calcular UPH</button>
           <br>
@@ -416,6 +435,19 @@
           <div class="map-section">
             <h2>Mapa SVG</h2>
             <svg id="mapa-svg-codificado"></svg>
+          </div>
+        </div>
+        <div>
+          <div class="list">
+            <h2>Detalle</h2>
+            <table id="listado-detalle-decodificador"></table>
+          </div>
+          </div>
+          
+          <div>
+          <div class="list">
+            <h2>Listado de Cosecha</h2>
+            <table id="listado-resumen-decodificador"></table>
           </div>
         </div>
       </div>
@@ -444,10 +476,11 @@
           <br>
           <br>
           <label for="evolucionesLoop">Evoluciones:</label>
-          <input type="number" id="evolucionesLoop" value="100" >
+          <input type="number" id="evolucionesLoop" value="2" >
           <br>
           <button id="evolucionLoopbtn">Loop evolución</button>
-          <div id="mejorPuntuacionAbs">Mejor puntuación:</div>
+          <div id="mejorUPH">Mejor UPH:</div>
+          <div id="mejorPuntuacionAbs">Mejor mapa:</div>
           <div id="generacion">Generacion:</div>
         </div>
         <div class="map-section" id="grafOpt">
@@ -489,24 +522,46 @@
     <div class="first-row">
       <div class="input-section">
         <label for="anchoMapa">Ancho del mapa:</label>
-        <input type="number" id="anchoMapaGUI" value="11" >
+        <input type="number" id="anchoMapaGUI" value="13" >
         <br>
         <label for="largoMapa">Largo del mapa:</label>
-        <input type="number" id="largoMapaGUI" value="11" >
+        <input type="number" id="largoMapaGUI" value="13" >
         <br>
         <label for="codigoGUI">Código del mapa:</label>
         <input type="text" id="codigoGUI">
         <br>
         <div id="resultadoUPHGUI">UPH:</div>
       </div>
+
+
       <div class="input-section">
           <input type="text" id="codigoObjeto" value="S">
+
+          <div id="contenedor-botones"></div>
+
+          
         </div>
         
+
       <div>
         <div class="map-section">
           <h2>Mapa GUI</h2>
           <svg id="mapa-svg-gui"></svg>
+          
+          <div id="codigoMapaGUI">Mejor mapa:</div>
+        </div>
+      </div>
+      <div>
+        <div class="list">
+          <h2>Detalle</h2>
+          <table id="listado-detalle-GUI"></table>
+        </div>
+        </div>
+
+        <div>
+        <div class="list">
+          <h2>Listado de Cosecha</h2>
+          <table id="listado-resumen-GUI"></table>
         </div>
       </div>
 
